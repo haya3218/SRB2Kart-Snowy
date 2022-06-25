@@ -1919,15 +1919,15 @@ static void ST_overlayDrawer(void)
 					strlcpy(name, player_names[stplyr-players], 13);*/
 
 					// Show name of player being displayed
-					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-40, 0, M_GetText("VIEWPOINT:"));
-					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-32, V_ALLOWLOWERCASE, player_names[stplyr-players]);
+					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-40, V_HUDTRANSHALF|V_YELLOWMAP|V_ALLOWLOWERCASE, M_GetText("Viewpoint:"));
+					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-32, V_HUDTRANSHALF|V_ALLOWLOWERCASE, player_names[stplyr-players]);
 				}
 			}
 			else if (!demo.title)
 			{
 				if (!splitscreen)
 				{
-					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-40, V_HUDTRANSHALF, M_GetText("VIEWPOINT:"));
+					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-40, V_HUDTRANSHALF|V_YELLOWMAP|V_ALLOWLOWERCASE, M_GetText("Viewpoint:"));
 					V_DrawCenteredString((BASEVIDWIDTH/2), BASEVIDHEIGHT-32, V_HUDTRANSHALF|V_ALLOWLOWERCASE, player_names[stplyr-players]);
 				}
 				else if (splitscreen == 1)
@@ -1935,7 +1935,7 @@ static void ST_overlayDrawer(void)
 					char name[MAXPLAYERNAME+12];
 
 					INT32 y = (stplyr == &players[displayplayers[0]]) ? 4 : BASEVIDHEIGHT/2-12;
-					sprintf(name, "VIEWPOINT: %s", player_names[stplyr-players]);
+					sprintf(name, "\x82Viewpoint:\x80 %s", player_names[stplyr-players]);
 					V_DrawRightAlignedThinString(BASEVIDWIDTH-40, y, V_HUDTRANSHALF|V_ALLOWLOWERCASE|K_calcSplitFlags(V_SNAPTOTOP|V_SNAPTOBOTTOM|V_SNAPTORIGHT), name);
 				}
 				else if (splitscreen)
@@ -2018,14 +2018,14 @@ static void ST_overlayDrawer(void)
 			{
 				INT32 splitflags = K_calcSplitFlags(0);
 				V_DrawThinString(2, (BASEVIDHEIGHT/2)-20, V_YELLOWMAP|V_HUDTRANSHALF|splitflags, M_GetText("- SPECTATING -"));
-				V_DrawThinString(2, (BASEVIDHEIGHT/2)-10, V_HUDTRANSHALF|splitflags, itemtxt);
+				V_DrawThinString(2, (BASEVIDHEIGHT/2)-10, V_HUDTRANSHALF|V_ALLOWLOWERCASE|splitflags, itemtxt);
 			}
 			else
 			{
 				V_DrawString(2, BASEVIDHEIGHT-40, V_HUDTRANSHALF|V_YELLOWMAP, M_GetText("- SPECTATING -"));
-				V_DrawString(2, BASEVIDHEIGHT-30, V_HUDTRANSHALF, itemtxt);
-				V_DrawString(2, BASEVIDHEIGHT-20, V_HUDTRANSHALF, M_GetText("Accelerate - Float"));
-				V_DrawString(2, BASEVIDHEIGHT-10, V_HUDTRANSHALF, M_GetText("Brake - Sink"));
+				V_DrawString(2, BASEVIDHEIGHT-30, V_HUDTRANSHALF|V_ALLOWLOWERCASE, itemtxt);
+				V_DrawString(2, BASEVIDHEIGHT-20, V_HUDTRANSHALF|V_ALLOWLOWERCASE, M_GetText("Accelerate - Float"));
+				V_DrawString(2, BASEVIDHEIGHT-10, V_HUDTRANSHALF|V_ALLOWLOWERCASE, M_GetText("Brake - Sink"));
 			}
 		}
 	}
@@ -2062,6 +2062,9 @@ void ST_DrawDemoTitleEntry(void)
 	static UINT8 skullAnimCounter = 0;
 	char *nametodraw;
 
+	INT32 x = (BASEVIDWIDTH/2 - 139);
+	INT32 y = (BASEVIDHEIGHT/2);
+
 	skullAnimCounter++;
 	skullAnimCounter %= 8;
 
@@ -2069,10 +2072,9 @@ void ST_DrawDemoTitleEntry(void)
 	while (V_StringWidth(nametodraw, 0) > MAXSTRINGLENGTH*8 - 8)
 		nametodraw++;
 
-#define x (BASEVIDWIDTH/2 - 139)
-#define y (BASEVIDHEIGHT/2)
 	M_DrawTextBox(x, y + 4, MAXSTRINGLENGTH, 1);
 	V_DrawString(x + 8, y + 12, V_ALLOWLOWERCASE, nametodraw);
+	
 	if (skullAnimCounter < 4)
 		V_DrawCharacter(x + 8 + V_StringWidth(nametodraw, 0), y + 12,
 			'_' | 0x80, false);
@@ -2081,10 +2083,8 @@ void ST_DrawDemoTitleEntry(void)
 	V_DrawString(x + 38, y - 16, V_ALLOWLOWERCASE, "Enter the name of the replay.");
 
 	M_DrawTextBox(x + 50, y + 20, 20, 1);
-	V_DrawThinString(x + 58, y + 28, V_ALLOWLOWERCASE, "Escape - Cancel");
-	V_DrawRightAlignedThinString(x + 220, y + 28, V_ALLOWLOWERCASE, "Enter - Confirm");
-#undef x
-#undef y
+	V_DrawThinString(x + 58, y + 28, V_ALLOWLOWERCASE, "[\x82" "Escape\x80] Cancel");
+	V_DrawRightAlignedThinString(x + 219, y + 28, V_ALLOWLOWERCASE, "[\x82" "Enter\x80] Confirm");
 }
 
 // MayonakaStatic: draw Midnight Channel's TV-like borders
