@@ -8669,9 +8669,12 @@ static void K_drawKartFirstPerson(void)
 		{ pnum[0] = pn; turn[0] = tn; drift[0] = dr; }
 }
 
-// doesn't need to ever support 4p
+// doesn't need to ever support 4p, and thats right!
 static void K_drawInput(void)
 {
+	if (!cv_showinput.value) // abort is showinput is disabled.
+		return;
+
 	static INT32 pn = 0;
 	INT32 target = 0, splitflags = (V_SNAPTOBOTTOM|V_SNAPTORIGHT);
 	INT32 x = BASEVIDWIDTH - 32, y = BASEVIDHEIGHT-24, offs, col;

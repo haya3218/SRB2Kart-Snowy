@@ -2033,18 +2033,20 @@ static void ST_overlayDrawer(void)
 	// Replay manual-save stuff
 	if (demo.recording && multiplayer && demo.savebutton && demo.savebutton + 3*TICRATE < leveltime)
 	{
+		UINT32 flags = V_HUDTRANS|V_SNAPTOTOP|V_SNAPTORIGHT|V_ALLOWLOWERCASE|V_6WIDTHSPACE|(G_BattleGametype() ? V_REDMAP : V_SKYMAP);
+
 		switch (demo.savemode)
 		{
 		case DSM_NOTSAVING:
-			V_DrawRightAlignedThinString(BASEVIDWIDTH - 2, 2, V_HUDTRANS|V_SNAPTOTOP|V_SNAPTORIGHT|V_ALLOWLOWERCASE|(G_BattleGametype() ? V_REDMAP : V_SKYMAP), "Look Backward: Save replay");
+			V_DrawRightAlignedThinString(BASEVIDWIDTH - 2, 2, flags, "Look Backward: Save replay");
 			break;
 
 		case DSM_WILLAUTOSAVE:
-			V_DrawRightAlignedThinString(BASEVIDWIDTH - 2, 2, V_HUDTRANS|V_SNAPTOTOP|V_SNAPTORIGHT|V_ALLOWLOWERCASE|(G_BattleGametype() ? V_REDMAP : V_SKYMAP), "Replay will be saved. (Look Backward: Change title)");
+			V_DrawRightAlignedThinString(BASEVIDWIDTH - 2, 2, flags, "Replay will be saved. (Look Backward: Change title)");
 			break;
 
 		case DSM_WILLSAVE:
-			V_DrawRightAlignedThinString(BASEVIDWIDTH - 2, 2, V_HUDTRANS|V_SNAPTOTOP|V_SNAPTORIGHT|V_ALLOWLOWERCASE|(G_BattleGametype() ? V_REDMAP : V_SKYMAP), "Replay will be saved.");
+			V_DrawRightAlignedThinString(BASEVIDWIDTH - 2, 2, flags, "Replay will be saved.");
 			break;
 
 		case DSM_TITLEENTRY:

@@ -283,6 +283,8 @@ consvar_t cv_skipmapcheck = {"skipmapcheck", "Off", CV_SAVE, CV_OnOff, NULL, 0, 
 
 INT32 cv_debug;
 
+consvar_t cv_showinput = {"showinput", "On", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
+
 consvar_t cv_usemouse = {"use_mouse", "Off", CV_SAVE|CV_CALL,usemouse_cons_t, I_StartupMouse, 0, NULL, NULL, 0, 0, NULL};
 consvar_t cv_usemouse2 = {"use_mouse2", "Off", CV_SAVE|CV_CALL,usemouse_cons_t, I_StartupMouse2, 0, NULL, NULL, 0, 0, NULL};
 
@@ -485,7 +487,7 @@ consvar_t cv_sleep = {"cpusleep", "1", CV_SAVE, sleeping_cons_t, NULL, -1, NULL,
 
 consvar_t cv_showtrackaddon = {"showtrackaddon", "Yes", CV_SAVE, CV_YesNo, NULL, 0, NULL, NULL, 0, 0, NULL};
 
-static CV_PossibleValue_t skinselectmenu_t[] = {{SKINMENUTYPE_SCROLL, "Scoll"}, {SKINMENUTYPE_2D, "2d"}, {SKINMENUTYPE_GRID, "Grid"}, {0, NULL}};
+static CV_PossibleValue_t skinselectmenu_t[] = {{SKINMENUTYPE_SCROLL, "Scroll"}, {SKINMENUTYPE_2D, "2D"}, {SKINMENUTYPE_GRID, "Grid"}, {0, NULL}};
 consvar_t cv_skinselectmenu = {"skinselectmenu", "Grid", CV_SAVE, skinselectmenu_t, NULL, 0, NULL, NULL, 0, 0, NULL};
 
 static CV_PossibleValue_t skinselectgridsort_t[] ={
@@ -693,6 +695,8 @@ void D_RegisterServerCommands(void)
 	CV_RegisterVar(&cv_powerstones);
 	CV_RegisterVar(&cv_competitionboxes);
 	CV_RegisterVar(&cv_matchboxes);
+
+	CV_RegisterVar(&cv_showinput);
 
 	/*CV_RegisterVar(&cv_recycler);
 	CV_RegisterVar(&cv_teleporters);

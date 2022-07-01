@@ -285,6 +285,19 @@ INT32 HU_GetHighlightColor(void);
 	NULL\
 }
 
+// Another 2.2 backport
+#define DEFAULTSCROLLMENUSTYLE(header, source, prev, x, y)\
+{\
+	header,\
+	sizeof(source)/sizeof(menuitem_t),\
+	prev,\
+	source,\
+	M_DrawGenericScrollMenu,\
+	x, y,\
+	0,\
+	NULL\
+}
+
 #define PAUSEMENUSTYLE(source, x, y)\
 {\
 	NULL,\
