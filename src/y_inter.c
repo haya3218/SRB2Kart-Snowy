@@ -389,50 +389,10 @@ void Y_IntermissionDrawer(void)
 			x += (((16 - count) * vid.width) / (8 * vid.dupx));
 	}
 
-	// SRB2kart 290117 - compeltely replaced this block.
-	/*if (intertype == int_timeattack)
-	{
-		// draw time
-		ST_DrawPatchFromHud(HUD_TIME, sbotime);
-		if (cv_timetic.value)
-			ST_DrawNumFromHud(HUD_SECONDS, data.coop.tics);
-		else
-		{
-			INT32 seconds, minutes, tictrn;
-
-			seconds = G_TicsToSeconds(data.coop.tics);
-			minutes = G_TicsToMinutes(data.coop.tics, true);
-			tictrn  = G_TicsToCentiseconds(data.coop.tics);
-
-			ST_DrawNumFromHud(HUD_MINUTES, minutes); // Minutes
-			ST_DrawPatchFromHud(HUD_TIMECOLON, sbocolon); // Colon
-			ST_DrawPadNumFromHud(HUD_SECONDS, seconds, 2); // Seconds
-
-			// SRB2kart - pulled from old coop block, just in case we need it
-			// we should show centiseconds on the intermission screen too, if the conditions are right.
-			if (modeattacking || cv_timetic.value == 2)
-			{
-				ST_DrawPatchFromHud(HUD_TIMETICCOLON, sboperiod); // Period
-				ST_DrawPadNumFromHud(HUD_TICS, tictrn, 2); // Tics
-			}
-
-			ST_DrawPatchFromHud(HUD_TIMETICCOLON, sboperiod); // Period
-			ST_DrawPadNumFromHud(HUD_TICS, tictrn, 2); // Tics
-		}
-
-		// draw the "got through act" lines and act number
-		V_DrawLevelTitle(data.coop.passedx1, 49, 0, data.coop.passed1);
-		V_DrawLevelTitle(data.coop.passedx2, 49+V_LevelNameHeight(data.coop.passed2)+2, 0, data.coop.passed2);
-
-		if (strlen(mapheaderinfo[prevmap]->actnum) > 0)
-			V_DrawScaledPatch(244, 57, 0, data.coop.ttlnum);
-
-		//if (gottimebonus && endtic != -1)
-		//	V_DrawCenteredString(BASEVIDWIDTH/2, 172, V_YELLOWMAP, "TIME BONUS UNLOCKED!");
-	}
-	else*/ if (intertype == int_race || intertype == int_match)
-	{
 #define NUMFORNEWCOLUMN 8
+
+	if (intertype == int_race || intertype == int_match)
+	{
 		INT32 y = 41, gutter = ((data.match.numplayers > NUMFORNEWCOLUMN) ? 0 : (BASEVIDWIDTH/2));
 		INT32 dupadjust = (vid.width/vid.dupx), duptweak = (dupadjust - BASEVIDWIDTH)/2;
 		const char *timeheader;
@@ -561,9 +521,10 @@ void Y_IntermissionDrawer(void)
 				y = 41;
 				x += BASEVIDWIDTH/2;
 			}
-#undef NUMFORNEWCOLUMN
 		}
 	}
+
+#undef NUMFORNEWCOLUMN
 
 dotimer:
 	if (timer)

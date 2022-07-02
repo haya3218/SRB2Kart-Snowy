@@ -470,11 +470,11 @@ msgid "has been kicked (Go away)\n"
 msgstr ""
 
 #: d_clisrv.c:1768
-msgid "left the game (Broke ping limit)\n"
+msgid "broke the ping limit, and left.\n"
 msgstr ""
 
 #: d_clisrv.c:1772
-msgid "left the game (Consistency failure)\n"
+msgid "left the game. (Consistency failure)\n"
 msgstr ""
 
 #: d_clisrv.c:1778
@@ -493,44 +493,44 @@ msgid "Player %d has a null mo\n"
 msgstr ""
 
 #: d_clisrv.c:1792
-msgid "left the game (Connection timeout)\n"
+msgid "left the game. (Connection timeout)\n"
 msgstr ""
 
 #: d_clisrv.c:1795
-msgid "left the game\n"
+msgid "left the game.\n"
 msgstr ""
 
 #: d_clisrv.c:1798
-msgid "has been banned (Don't come back)\n"
+msgid "has been banned. (Don't come back)\n"
 msgstr ""
 
 #: d_clisrv.c:1802
 #, c-format
-msgid "has been kicked (%s)\n"
+msgid "has been kicked. (%s)\n"
 msgstr ""
 
 #: d_clisrv.c:1806
 #, c-format
-msgid "has been banned (%s)\n"
+msgid "has been banned. (%s)\n"
 msgstr ""
 
 #: d_clisrv.c:1820
 msgid ""
-"Server closed connection\n"
+"Server closed connection.\n"
 "(consistency failure)\n"
 "Press ESC\n"
 msgstr ""
 
 #: d_clisrv.c:1825
 msgid ""
-"Server closed connection\n"
+"Server closed connection.\n"
 "(Broke ping limit)\n"
 "Press ESC\n"
 msgstr ""
 
 #: d_clisrv.c:1828
 msgid ""
-"You have been banned by the server\n"
+"You have been banned by the server.\n"
 "\n"
 "Press ESC\n"
 msgstr ""
@@ -538,7 +538,7 @@ msgstr ""
 #: d_clisrv.c:1830
 #, c-format
 msgid ""
-"You have been kicked\n"
+"You have been kicked.\n"
 "(%s)\n"
 "Press ESC\n"
 msgstr ""
@@ -546,14 +546,14 @@ msgstr ""
 #: d_clisrv.c:1832
 #, c-format
 msgid ""
-"You have been banned\n"
+"You have been banned.\n"
 "(%s)\n"
 "Press ESC\n"
 msgstr ""
 
 #: d_clisrv.c:1834
 msgid ""
-"You have been kicked by the server\n"
+"You have been kicked by the server.\n"
 "\n"
 "Press ESC\n"
 msgstr ""
@@ -565,7 +565,7 @@ msgstr ""
 
 #: d_clisrv.c:2039
 #, c-format
-msgid "Player %d has joined the game (node %d)\n"
+msgid "Player %d has joined the game. (node %d)\n"
 msgstr ""
 
 #: d_clisrv.c:2063

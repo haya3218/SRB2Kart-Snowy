@@ -8101,7 +8101,7 @@ boolean P_SpectatorJoinGame(player_t *player)
 		if (P_IsLocalPlayer(player) && displayplayers[0] != consoleplayer)
 			displayplayers[0] = consoleplayer;
 
-		HU_AddChatText(va(M_GetText("\x82*%s entered the game."), player_names[player-players]), false);
+		HU_AddChatText(va(M_GetText("\x82* %s entered the game."), player_names[player-players]), false);
 		return true; // no more player->mo, cannot continue.
 	}
 	return false;

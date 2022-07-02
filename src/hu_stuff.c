@@ -802,40 +802,30 @@ static void Got_Saycmd(UINT8 **p, INT32 playernum)
 		}
 
 		// Choose the proper format string for display.
-		// Each format includes four strings: color start, display
-		// name, color end, and the message itself.
+		// Each format includes four strings: 
+		// color start, display, name, color end, and the message itself.
 		// '\4' makes the message yellow and beeps; '\3' just beeps.
+		
 		if (action)
 			fmt2 = "* %s%s%s%s \x82%s%s";
 		else if (target-1 == consoleplayer) // To you
 		{
-			prefix = "\x82[PM]";
+			prefix = "\x82[From] ";
 			cstart = "\x82";
 			textcolor = "\x82";
-			fmt2 = "%s<%s%s>%s\x80 %s%s";
+			fmt2 = "%s%s%s\x80:%s %s%s";
 		}
 		else if (target > 0) // By you, to another player
 		{
 			// Use target's name.
 			dispname = player_names[target-1];
-			prefix = "\x82[TO]";
+			prefix = "\x82[To] ";
 			cstart = "\x82";
-			fmt2 = "%s<%s%s>%s\x80 %s%s";
+			fmt2 = "%s%s%s\x80:%s %s%s";
 
 		}
 		else // To everyone or sayteam, it doesn't change anything.
-			fmt2 = "%s<%s%s%s>\x80 %s%s";
-		/*else // To your team
-		{
-			if (players[playernum].ctfteam == 1) // red
-				prefix = "\x85[TEAM]";
-			else if (players[playernum].ctfteam == 2) // blue
-				prefix = "\x84[TEAM]";
-			else
-				prefix = "\x83"; // makes sure this doesn't implode if you sayteam on non-team gamemodes
-
-			fmt2 = "%s<%s%s>\x80%s %s%s";
-		}*/
+			fmt2 = "%s%s%s%s\x80: %s%s";
 
 		HU_AddChatText(va(fmt2, prefix, cstart, dispname, cend, textcolor, msg), cv_chatnotifications.value); // add to chat
 
@@ -998,7 +988,7 @@ static void HU_queueChatChar(INT32 c)
 		// last minute mute check
 		if (CHAT_MUTE)
 		{
-			HU_AddChatText(va("%s>ERROR: The chat is muted. You can't say anything.", "\x85"), false);
+			HU_AddChatText(va("%s> ERROR: The chat is muted. You can't say anything.", "\x85"), false);
 			return;
 		}
 
@@ -1029,7 +1019,7 @@ static void HU_queueChatChar(INT32 c)
 					// let it slide
 				else
 				{
-					HU_AddChatText("\x82NOTICE: \x80Invalid command format. Correct format is \'/pm<node> \'.", false);
+					HU_AddChatText("\x82* NOTICE: \x80Invalid command format. Correct format is \'/pm<node> \'.", false);
 					free(nodenum);
 					return;
 				}
@@ -1039,7 +1029,7 @@ static void HU_queueChatChar(INT32 c)
 			{
 				if (msg[5] != ' ')
 				{
-					HU_AddChatText("\x82NOTICE: \x80Invalid command format. Correct format is \'/pm<node> \'.", false);
+					HU_AddChatText("\x82* NOTICE: \x80Invalid command format. Correct format is \'/pm<node> \'.", false);
 					free(nodenum);
 					return;
 				}
@@ -1054,7 +1044,7 @@ static void HU_queueChatChar(INT32 c)
 				target++; // even though playernums are from 0 to 31, target is 1 to 32, so up that by 1 to have it work!
 			else
 			{
-				HU_AddChatText(va("\x82NOTICE: \x80Player %d does not exist.", target), false); // same
+				HU_AddChatText(va("\x82* NOTICE: \x80Player %d does not exist.", target), false); // same
 				return;
 			}
 
@@ -1766,14 +1756,14 @@ static void HU_DrawChat(void)
 				char name[MAXPLAYERNAME+1];
 				strlcpy(name, player_names[i], 7); // shorten name to 7 characters.
 				V_DrawFillConsoleMap(chatx+ boxw + 2, p_dispy- (6*count), 48, 6, 239 | V_SNAPTOBOTTOM | V_SNAPTOLEFT); // fill it like the chat so the text doesn't become hard to read because of the hud.
-				V_DrawSmallString(chatx+ boxw + 4, p_dispy- (6*count), V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, va("\x82%d\x80 - %s", i, name));
+				V_DrawSmallString(chatx+ boxw + 4, p_dispy - (6*count) + 1, V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, va("\x82%d\x80 - %s", i, name));
 				count++;
 			}
 		}
 		if (count == 0) // no results.
 		{
 			V_DrawFillConsoleMap(chatx+boxw+2, p_dispy- (6*count), 48, 6, 239 | V_SNAPTOBOTTOM | V_SNAPTOLEFT); // fill it like the chat so the text doesn't become hard to read because of the hud.
-			V_DrawSmallString(chatx+boxw+4, p_dispy- (6*count), V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, "NO RESULT.");
+			V_DrawSmallString(chatx+boxw+4, p_dispy - (6*count) + 1, V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, "NO RESULT.");
 		}
 	}
 
@@ -2219,7 +2209,7 @@ void HU_Drawer(void)
 	 || gamestate == GS_INTERMISSION || gamestate == GS_CUTSCENE
 	 || gamestate == GS_CREDITS      || gamestate == GS_EVALUATION
 	 || gamestate == GS_GAMEEND
-	 || gamestate == GS_VOTING || gamestate == GS_WAITINGPLAYERS) // SRB2kart
+	 || gamestate == GS_WAITINGPLAYERS) // SRB2kart
 		return;
 
 	// draw multiplayer rankings
@@ -2227,14 +2217,19 @@ void HU_Drawer(void)
 	{
 		if (netgame || multiplayer)
 		{
-#ifdef HAVE_BLUA
-			if (LUA_HudEnabled(hud_rankings))
-#endif
+			if (gamestate == GS_VOTING)
+			{
+				// Avoid drawing a custom lua scoreboard, it (obviously) breaks.
 				HU_DrawRankings();
-#ifdef HAVE_BLUA
+				return;
+			}
+
+			if (LUA_HudEnabled(hud_rankings))
+				HU_DrawRankings();
+		
 		LUAh_ScoresHUD();
-#endif
 		}
+		
 		if (demo.playback)
 		{
 			HU_DrawDemoInfo();
@@ -2243,22 +2238,6 @@ void HU_Drawer(void)
 
 	if (gamestate != GS_LEVEL)
 		return;
-
-	// draw the crosshair, not when viewing demos nor with chasecam
-	/*if (!automapactive && !demo.playback)
-	{
-		if (cv_crosshair.value && !camera[0].chase && !players[displayplayers[0]].spectator)
-			HU_DrawCrosshair();
-
-		if (cv_crosshair2.value && !camera[1].chase && !players[displayplayers[1]].spectator)
-			HU_DrawCrosshair2();
-
-		if (cv_crosshair3.value && !camera[2].chase && !players[displayplayers[2]].spectator)
-			HU_DrawCrosshair3();
-
-		if (cv_crosshair4.value && !camera[3].chase && !players[displayplayers[3]].spectator)
-			HU_DrawCrosshair4();
-	}*/
 
 	// draw song credits
 	if (cv_songcredits.value)
@@ -2743,11 +2722,13 @@ static inline void HU_DrawSpectatorTicker(void)
 	INT32 totallength = 0, templength = -8;
 	INT32 dupadjust = (vid.width/vid.dupx), duptweak = (dupadjust - BASEVIDWIDTH)/2;
 
+	tic_t realtime = (gamestate == GS_LEVEL) ? leveltime : I_GetTime();
+
 	for (i = 0; i < MAXPLAYERS; i++)
 		if (playeringame[i] && players[i].spectator)
 			totallength += (signed)strlen(player_names[i]) * 8 + 16;
 
-	length -= (leveltime % (totallength + dupadjust+8));
+	length -= (realtime % (totallength + dupadjust+8));
 	length += dupadjust;
 
 	for (i = 0; i < MAXPLAYERS; i++)
@@ -2804,7 +2785,7 @@ static void HU_DrawRankings(void)
 {
 	patch_t *p;
 	playersort_t tab[MAXPLAYERS];
-	INT32 i, j, scorelines, hilicol, numplayersingame = 0;
+	INT32 i, j, scorelines, hilicol; // numplayersingame = 0;
 	boolean completed[MAXPLAYERS];
 	UINT32 whiteplayer = MAXPLAYERS;
 
@@ -2819,9 +2800,9 @@ static void HU_DrawRankings(void)
 
 	// draw the current gametype in the lower right
 	if (modeattacking)
-		V_DrawString(4, 188, hilicol|V_SNAPTOBOTTOM|V_SNAPTOLEFT, "Record Attack");
+		V_DrawString(4, 188, hilicol|V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, "Record Attack");
 	else
-		V_DrawString(4, 188, hilicol|V_SNAPTOBOTTOM|V_SNAPTOLEFT, gametype_cons_t[gametype].strvalue);
+		V_DrawString(4, 188, hilicol|V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, gametype_cons_t[gametype].strvalue);
 
 	if (G_GametypeHasTeams())
 	{
@@ -2842,57 +2823,54 @@ static void HU_DrawRankings(void)
 		V_DrawCenteredString(192, 16, 0, va("%u", redscore));
 	}
 
-	if (!G_RaceGametype())
+	if (gamestate == GS_LEVEL)
 	{
-		if (cv_timelimit.value && timelimitintics > 0)
+		if (!G_RaceGametype())
 		{
-			UINT32 timeval = (timelimitintics + starttime + 1 - leveltime);
-			if (timeval > timelimitintics+1)
-				timeval = timelimitintics;
-			timeval /= TICRATE;
-
-			if (leveltime <= (timelimitintics + starttime))
+			if (cv_timelimit.value && timelimitintics > 0)
 			{
-				V_DrawCenteredString(64, 8, 0, "TIME LEFT");
-				V_DrawCenteredString(64, 16, hilicol, va("%u", timeval));
+				UINT32 timeval = (timelimitintics + starttime + 1 - leveltime);
+				if (timeval > timelimitintics+1)
+					timeval = timelimitintics;
+				timeval /= TICRATE;
+
+				if (leveltime <= (timelimitintics + starttime))
+				{
+					V_DrawCenteredString(64, 8, V_ALLOWLOWERCASE, "Time Left");
+					V_DrawCenteredString(64, 16, hilicol, va("%u", timeval));
+				}
+
+				// overtime
+				if (!players[consoleplayer].exiting && (leveltime > (timelimitintics + starttime + TICRATE/2)) && cv_overtime.value)
+				{
+					V_DrawCenteredString(64, 8, V_ALLOWLOWERCASE, "Time Left");
+					V_DrawCenteredString(64, 16, hilicol, "OVERTIME");
+				}
 			}
 
-			// overtime
-			if (!players[consoleplayer].exiting && (leveltime > (timelimitintics + starttime + TICRATE/2)) && cv_overtime.value)
+			if (cv_pointlimit.value > 0)
 			{
-				V_DrawCenteredString(64, 8, 0, "TIME LEFT");
-				V_DrawCenteredString(64, 16, hilicol, "OVERTIME");
+				V_DrawCenteredString(256, 8, V_ALLOWLOWERCASE, "Point Limit");
+				V_DrawCenteredString(256, 16, hilicol, va("%d", cv_pointlimit.value));
 			}
 		}
-
-		if (cv_pointlimit.value > 0)
+		else
 		{
-			V_DrawCenteredString(256, 8, 0, "POINT LIMIT");
-			V_DrawCenteredString(256, 16, hilicol, va("%d", cv_pointlimit.value));
+			if (circuitmap)
+			{
+				V_DrawCenteredString(160, 8, V_ALLOWLOWERCASE, "Lap Count");
+				V_DrawCenteredString(160, 16, hilicol, va("%d", cv_numlaps.value));
+			}
+
+			V_DrawString(4, 178, hilicol|V_ALLOWLOWERCASE, va("%s Speed", cv_kartspeed.string));
 		}
 	}
-	/*else if (gametype == GT_COOP)
-	{
-		INT32 totalscore = 0;
-		for (i = 0; i < MAXPLAYERS; i++)
-		{
-			if (playeringame[i])
-				totalscore += players[i].score;
-		}
-
-		V_DrawCenteredString(256, 8, 0, "TOTAL SCORE");
-		V_DrawCenteredString(256, 16, 0, va("%u", totalscore));
-	}*/
 	else
 	{
-		if (circuitmap)
-		{
-			V_DrawCenteredString(64, 8, 0, "LAP COUNT");
-			V_DrawCenteredString(64, 16, hilicol, va("%d", cv_numlaps.value));
-		}
-
-		V_DrawCenteredString(256, 8, 0, "GAME SPEED");
-		V_DrawCenteredString(256, 16, hilicol, cv_kartspeed.string);
+		if (G_RaceGametype())
+			V_DrawString(4, 178, hilicol|V_ALLOWLOWERCASE, va("%s Speed", cv_kartspeed.string));
+			
+		V_DrawCenteredString(160, 8, V_ALLOWLOWERCASE, "\x82* \x80Total Rankings \x82*");
 	}
 
 	// When you play, you quickly see your score because your name is displayed in white.
@@ -2901,34 +2879,36 @@ static void HU_DrawRankings(void)
 		whiteplayer = demo.playback ? displayplayers[0] : consoleplayer;
 
 	scorelines = 0;
-	memset(completed, 0, sizeof (completed));
-	memset(tab, 0, sizeof (playersort_t)*MAXPLAYERS);
+	memset(completed, 0, sizeof(completed));
+	memset(tab, 0, sizeof(playersort_t) * MAXPLAYERS);
 
 	for (i = 0; i < MAXPLAYERS; i++)
 	{
 		tab[i].num = -1;
 		tab[i].name = NULL;
 		tab[i].count = INT32_MAX;
+		tab[i].position = 0;
 
-		if (!playeringame[i] || players[i].spectator || !players[i].mo)
+		/*if (players[i].spectator || !players[i].mo)
 			continue;
 
-		numplayersingame++;
+		numplayersingame++;*/
 	}
 
-	for (j = 0; j < numplayersingame; j++)
+	for (j = 0; j < MAXPLAYERS; j++)
 	{
 		UINT8 lowestposition = MAXPLAYERS+1;
+
 		for (i = 0; i < MAXPLAYERS; i++)
 		{
-			if (completed[i] || !playeringame[i] || players[i].spectator || !players[i].mo)
+			if (completed[i] || players[i].spectator || !players[i].mo)
 				continue;
 
-			if (players[i].kartstuff[k_position] >= lowestposition)
+			if (tab[scorelines].position >= lowestposition)
 				continue;
 
 			tab[scorelines].num = i;
-			lowestposition = players[i].kartstuff[k_position];
+			lowestposition = tab[scorelines].position;
 		}
 
 		i = tab[scorelines].num;
@@ -2937,15 +2917,25 @@ static void HU_DrawRankings(void)
 
 		tab[scorelines].name = player_names[i];
 
-		if (G_RaceGametype())
+		if (gamestate == GS_LEVEL)
 		{
-			if (circuitmap)
-				tab[scorelines].count = players[i].laps+1;
+			if (G_RaceGametype())
+			{
+				if (circuitmap)
+					tab[scorelines].count = players[i].laps+1;
+				else
+					tab[scorelines].count = players[i].realtime;
+			}
 			else
-				tab[scorelines].count = players[i].realtime;
+				tab[scorelines].count = players[i].marescore;
+
+			tab[scorelines].position = players[i].kartstuff[k_position];
 		}
 		else
-			tab[scorelines].count = players[i].marescore;
+		{
+			tab[scorelines].position = (UINT8)tab[scorelines].count;
+			tab[scorelines].count = players[i].score;
+		}
 
 		scorelines++;
 
@@ -2955,12 +2945,7 @@ static void HU_DrawRankings(void)
 #endif
 	}
 
-	/*if (G_GametypeHasTeams())
-		HU_DrawTeamTabRankings(tab, whiteplayer); //separate function for Spazzo's silly request -- gotta fix this up later
-	else if (scorelines > 10)*/
-	HU_DrawTabRankings(((scorelines > 8) ? 32 : 40), 33, tab, scorelines, whiteplayer, hilicol);
-	/*else
-		HU_DrawDualTabRankings(32, 32, tab, scorelines, whiteplayer);*/
+	HU_DrawTabRankings(40, 33, tab, scorelines, whiteplayer, hilicol);
 
 	// draw spectators in a ticker across the bottom
 	if (netgame && G_GametypeHasSpectators())

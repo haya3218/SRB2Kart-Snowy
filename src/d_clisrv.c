@@ -1195,7 +1195,7 @@ static inline void CL_DrawConnectionStatus(void)
 
 		//Draw bottom box
 		M_DrawTextBox(BASEVIDWIDTH/2-128-8, BASEVIDHEIGHT-24-8, 32, 1);
-		V_DrawCenteredString(BASEVIDWIDTH/2, BASEVIDHEIGHT-24-24, V_YELLOWMAP, "Press ESC to abort");
+		V_DrawCenteredString(BASEVIDWIDTH/2, BASEVIDHEIGHT-24-24, V_YELLOWMAP|V_ALLOWLOWERCASE, "Press ESC to abort");
 
 		for (i = 0; i < 16; ++i)
 			V_DrawFill((BASEVIDWIDTH/2-128) + (i * 16), BASEVIDHEIGHT-24, 16, 8, palstart + ((animtime - i) & 15));
@@ -3463,15 +3463,15 @@ static void Got_KickCmd(UINT8 **p, INT32 playernum)
 	switch (msg)
 	{
 		case KICK_MSG_GO_AWAY:
-			HU_AddChatText(va("\x82*%s has been kicked (Go away)", player_names[pnum]), false);
+			HU_AddChatText(va("\x82* %s has been kicked. (Go away!)", player_names[pnum]), false);
 			kickreason = KR_KICK;
 			break;
 		case KICK_MSG_PING_HIGH:
-			HU_AddChatText(va("\x82*%s left the game (Broke ping limit)", player_names[pnum]), false);
+			HU_AddChatText(va("\x82* %s broke the ping limit, and left.", player_names[pnum]), false);
 			kickreason = KR_PINGLIMIT;
 			break;
 		case KICK_MSG_CON_FAIL:
-			HU_AddChatText(va("\x82*%s left the game (Synch Failure)", player_names[pnum]), false);
+			HU_AddChatText(va("\x82* %s left the game. (Synch Failure)", player_names[pnum]), false);
 			kickreason = KR_SYNCH;
 
 			if (true) // M_CheckParm("-consisdump")) // Helps debugging some problems
@@ -3510,26 +3510,26 @@ static void Got_KickCmd(UINT8 **p, INT32 playernum)
 			}
 			break;
 		case KICK_MSG_TIMEOUT:
-			HU_AddChatText(va("\x82*%s left the game (Connection timeout)", player_names[pnum]), false);
+			HU_AddChatText(va("\x82 *%s left the game. (Connection timeout)", player_names[pnum]), false);
 			kickreason = KR_TIMEOUT;
 			break;
 		case KICK_MSG_PLAYER_QUIT:
 			if (netgame) // not splitscreen/bots
-				HU_AddChatText(va("\x82*%s left the game", player_names[pnum]), false);
+				HU_AddChatText(va("\x82* %s left the game.", player_names[pnum]), false);
 			kickreason = KR_LEAVE;
 			break;
 		case KICK_MSG_BANNED:
-			HU_AddChatText(va("\x82*%s has been banned (Don't come back)", player_names[pnum]), false);
+			HU_AddChatText(va("\x82* %s has been banned. (Don't come back!)", player_names[pnum]), false);
 			kickreason = KR_BAN;
 			break;
 		case KICK_MSG_CUSTOM_KICK:
 			READSTRINGN(*p, reason, MAX_REASONLENGTH+1);
-			HU_AddChatText(va("\x82*%s has been kicked (%s)", player_names[pnum], reason), false);
+			HU_AddChatText(va("\x82* %s has been kicked. (%s)", player_names[pnum], reason), false);
 			kickreason = KR_KICK;
 			break;
 		case KICK_MSG_CUSTOM_BAN:
 			READSTRINGN(*p, reason, MAX_REASONLENGTH+1);
-			HU_AddChatText(va("\x82*%s has been banned (%s)", player_names[pnum], reason), false);
+			HU_AddChatText(va("\x82* %s has been banned. (%s)", player_names[pnum], reason), false);
 			kickreason = KR_BAN;
 			break;
 	}
@@ -3543,17 +3543,17 @@ static void Got_KickCmd(UINT8 **p, INT32 playernum)
 		CL_Reset();
 		D_StartTitle();
 		if (msg == KICK_MSG_CON_FAIL)
-			M_StartMessage(M_GetText("Server closed connection\n(Synch failure)\nPress ESC\n"), NULL, MM_NOTHING);
+			M_StartMessage(M_GetText("Server closed connection.\n(Synch failure)\nPress ESC\n"), NULL, MM_NOTHING);
 		else if (msg == KICK_MSG_PING_HIGH)
-			M_StartMessage(M_GetText("Server closed connection\n(Broke ping limit)\nPress ESC\n"), NULL, MM_NOTHING);
+			M_StartMessage(M_GetText("Server closed connection.\n(Broke ping limit)\nPress ESC\n"), NULL, MM_NOTHING);
 		else if (msg == KICK_MSG_BANNED)
-			M_StartMessage(M_GetText("You have been banned by the server\n\nPress ESC\n"), NULL, MM_NOTHING);
+			M_StartMessage(M_GetText("You have been banned by the server.\n\nPress ESC\n"), NULL, MM_NOTHING);
 		else if (msg == KICK_MSG_CUSTOM_KICK)
-			M_StartMessage(va(M_GetText("You have been kicked\n(%s)\nPress ESC\n"), reason), NULL, MM_NOTHING);
+			M_StartMessage(va(M_GetText("You have been kicked.\n(%s)\nPress ESC\n"), reason), NULL, MM_NOTHING);
 		else if (msg == KICK_MSG_CUSTOM_BAN)
-			M_StartMessage(va(M_GetText("You have been banned\n(%s)\nPress ESC\n"), reason), NULL, MM_NOTHING);
+			M_StartMessage(va(M_GetText("You have been banned.\n(%s)\nPress ESC\n"), reason), NULL, MM_NOTHING);
 		else
-			M_StartMessage(M_GetText("You have been kicked by the server\n\nPress ESC\n"), NULL, MM_NOTHING);
+			M_StartMessage(M_GetText("You have been kicked by the server.\n\nPress ESC\n"), NULL, MM_NOTHING);
 	}
 	else if (server)
 	{
@@ -3570,7 +3570,7 @@ static void Got_KickCmd(UINT8 **p, INT32 playernum)
 		buf[0] = (UINT8)otherp; \
 		if (otherp != pnum) \
 		{ \
-			HU_AddChatText(va("\x82*%s left the game (Joined with %s)", player_names[otherp], player_names[pnum]), false); \
+			HU_AddChatText(va("\x82* %s left the game. (Joined with %s)", player_names[otherp], player_names[pnum]), false); \
 			buf[1] = KR_LEAVE; \
 		} \
 		else \
@@ -3977,20 +3977,20 @@ static void Got_AddPlayer(UINT8 **p, INT32 playernum)
 					I_GetNodeAddress && ( address = I_GetNodeAddress(node) ))
 			{
 				text = va(
-						"\x82*Player %d (num %d) has joined the game (%s)",
+						"\x82* Player %d (num %d) has joined the game. (%s)",
 						newplayernum+1, newplayernum, address);
 			}
 			else
 			{
 				text = va(
-						"\x82Player %d (num %d) has joined the game",
+						"\x82* Player %d (num %d) has joined the game.",
 						newplayernum+1, newplayernum);
 			}
 		}
 		else
 		{
 			text = va(
-					"\x82Player %d has joined the game",
+					"\x82* Player %d has joined the game.",
 					newplayernum+1);
 		}
 		HU_AddChatText(text, false);

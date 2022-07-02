@@ -711,15 +711,17 @@ $(BIN)/$(EXENAME): $(POS) $(OBJS)
 	-$(MKDIR) $(BIN)
 	@echo Linking $(EXENAME)...
 	$(LD) $(LDFLAGS) $(OBJS) -o $(BIN)/$(EXENAME) $(LIBS)
+
 ifndef VALGRIND
-ifndef NOOBJDUMP
-	@echo Dumping debugging info
-	$(OBJDUMP) $(OBJDUMP_OPTS) $(BIN)/$(EXENAME) > $(BIN)/$(DBGNAME).txt
-	-$(GZIP) $(GZIP_OPTS) $(BIN)/$(DBGNAME).txt
-ifndef WINDOWSHELL
-	-$(GZIP) $(GZIP_OPT2) $(BIN)/$(DBGNAME).txt
-endif
-endif
+
+#	ifndef NOOBJDUMP
+#		@echo Dumping debugging info
+#		$(OBJDUMP) $(OBJDUMP_OPTS) $(BIN)/$(EXENAME) > $(BIN)/$(DBGNAME).txt
+#		-$(GZIP) $(GZIP_OPTS) $(BIN)/$(DBGNAME).txt
+#	ifndef WINDOWSHELL
+#		-$(GZIP) $(GZIP_OPT2) $(BIN)/$(DBGNAME).txt
+#	endif
+#	endif
 
 # mac os x lsdlsrb2 does not like objcopy
 ifndef MACOSX

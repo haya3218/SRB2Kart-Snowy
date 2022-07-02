@@ -1313,7 +1313,7 @@ static void SetPlayerName(INT32 playernum, char *newname)
 		if (strcasecmp(newname, player_names[playernum]) != 0)
 		{
 			if (netgame)
-				HU_AddChatText(va("\x82*%s renamed to %s", player_names[playernum], newname), false);
+				HU_AddChatText(va("\x82* %s renamed to %s.", player_names[playernum], newname), false);
 
 			player_name_changes[playernum]++;
 

@@ -54,6 +54,7 @@ extern char english_shiftxform[];
 typedef struct
 {
 	UINT32 count;
+	UINT8 position; 
 	INT32 num;
 	const char *name;
 } playersort_t;
