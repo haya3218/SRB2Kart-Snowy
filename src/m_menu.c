@@ -269,6 +269,7 @@ static void M_StartServerMenu(INT32 choice);
 static void M_ConnectMenu(INT32 choice);
 static void M_ConnectMenuModChecks(INT32 choice);
 static void M_Refresh(INT32 choice);
+static void M_ConnectConf(INT32 choice);
 static void M_Connect(INT32 choice);
 #endif
 static void M_StartOfflineServerMenu(INT32 choice);
@@ -359,6 +360,7 @@ static UINT8 playback_enterheld = 0; // horrid hack to prevent holding the butto
 
 // Drawing functions
 static void M_DrawGenericMenu(void);
+static void M_DrawCenteredMenu(void);
 static void M_DrawGenericScrollMenu(void); // Jaden: Vanilla 2.2 backport
 static void M_DrawAddons(void);
 static void M_DrawAdvancedSoundOptions(void);
@@ -378,6 +380,7 @@ static void M_DrawMonitorToggles(void);
 static void M_DrawMPMainMenu(void);
 #ifndef NONET
 static void M_DrawConnectMenu(void);
+static void M_ConnectConfirmation(void);
 #endif
 static void M_DrawJoystick(void);
 static void M_DrawSetupMultiPlayerMenu(void);
@@ -394,6 +397,7 @@ static void M_HandleImageDef(INT32 choice);
 //static void M_HandleLoadSave(INT32 choice);
 static void M_HandleLevelStats(INT32 choice);
 #ifndef NONET
+static void M_HandleConnect(INT32 choice);
 static void M_HandleConnectIP(INT32 choice);
 #endif
 static void M_HandleSetupMultiPlayer(INT32 choice);
@@ -406,6 +410,13 @@ static void Newgametype_OnChange(void);
 static void Dummymenuplayer_OnChange(void);
 //static void Dummymares_OnChange(void);
 static void Dummystaff_OnChange(void);
+
+// Jaden: wtf? why doesnt this exist? (again)
+static void V_DrawCenteredSmallString(INT32 x, INT32 y, INT32 option, const char *string)
+{
+	x -= V_SmallStringWidth(string, option)/2;
+	V_DrawSmallString(x, y, option, string);
+}
 
 // ==========================================================================
 // CONSOLE VARIABLES AND THEIR POSSIBLE VALUES GO HERE.
@@ -1056,15 +1067,15 @@ static menuitem_t MP_ConnectMenu[] =
 	{IT_STRING | IT_KEYHANDLER, NULL, "Page",     M_HandleServerPage, 12},
 	{IT_STRING | IT_CALL,       NULL, "Refresh",  M_Refresh,          20},
 
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,          36},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,          48},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,          60},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,          72},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,          84},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,          96},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,         108},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,         120},
-	{IT_STRING | IT_SPACE, NULL, "",              M_Connect,         132},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,          36},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,          48},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,          60},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,          72},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,          84},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,          96},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,         108},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,         120},
+	{IT_STRING | IT_SPACE, NULL, "",              M_ConnectConf,         132},
 };
 
 enum
@@ -1074,6 +1085,13 @@ enum
 	mp_connect_refresh,
 	FIRSTSERVERLINE
 };
+
+static menuitem_t MP_ConnectConfirmation[] =
+{
+	{IT_STRING | IT_KEYHANDLER, NULL, "Connect to the server...", M_HandleConnect, 172},
+	{IT_TRANSTEXT2 | IT_SPACE, 	NULL, "Go back (ESC)", 			  NULL,			   180},
+};
+
 #endif
 
 // ------------------------------------
@@ -1690,7 +1708,7 @@ enum
 // ==========================================================================
 
 // Main Menu and related
-menu_t MainDef = DEFAULTMENUSTYLE(NULL, MainMenu, NULL, 30, 50);
+menu_t MainDef = CENTERMENUSTYLE(NULL, MainMenu, NULL, 50);
 
 menu_t MISC_AddonsDef =
 {
@@ -2052,6 +2070,19 @@ menu_t MP_ConnectDef =
 	0,
 	M_CancelConnect
 };
+
+menu_t MP_ConnectConfirmationDef = 
+{
+	NULL,
+	sizeof(MP_ConnectConfirmation) / sizeof(menuitem_t),
+	&MP_ConnectDef,
+	MP_ConnectConfirmation,
+	M_ConnectConfirmation,
+	160, 4,
+	0,
+	NULL
+};
+
 #endif
 menu_t MP_PlayerSetupDef =
 {
@@ -4405,7 +4436,7 @@ static void M_DrawPauseMenu(void)
 	M_DrawGenericMenu();
 }
 
-/*static void M_DrawCenteredMenu(void)
+static void M_DrawCenteredMenu(void)
 {
 	INT32 x, y, i, cursory = 0;
 
@@ -4488,6 +4519,10 @@ static void M_DrawPauseMenu(void)
 					break;
 			case IT_STRING2:
 				V_DrawCenteredString(x, y, V_ALLOWLOWERCASE, currentMenu->menuitems[i].text);
+			case IT_TRANSTEXT2:
+				V_DrawCenteredString(x, y, V_70TRANS|V_ALLOWLOWERCASE, currentMenu->menuitems[i].text);
+				y += SMALLLINEHEIGHT;
+				break;
 			case IT_DYLITLSPACE:
 				y += SMALLLINEHEIGHT;
 				break;
@@ -4520,7 +4555,7 @@ static void M_DrawPauseMenu(void)
 			W_CachePatchName("M_CURSOR", PU_CACHE));
 		V_DrawCenteredString(x, cursory, highlightflags|V_ALLOWLOWERCASE, currentMenu->menuitems[itemOn].text);
 	}
-}*/
+}
 
 //
 // M_StringHeight
@@ -8749,12 +8784,57 @@ static void M_HandleServerPage(INT32 choice)
 	}
 }
 
+static void M_ConnectConf(INT32 choice)
+{
+	(void)choice;
+
+	M_SetupNextMenu(&MP_ConnectConfirmationDef);
+}
+
+static void M_HandleConnect(INT32 choice)
+{
+	boolean exitmenu = false; // exit to previous menu
+	UINT16 i, current_menu = 0;
+
+	switch (choice)
+	{
+		case KEY_BACKSPACE:
+		case KEY_ESCAPE:
+			exitmenu = true;
+			break;
+
+		case KEY_ENTER:
+			S_StartSound(NULL, sfx_menu1);
+		
+			for (i = 0; i < min(serverlistcount - serverlistpage * SERVERS_PER_PAGE, SERVERS_PER_PAGE); i++)
+			{
+				if (itemOn == FIRSTSERVERLINE+i)
+					current_menu = i;
+
+				M_Connect(current_menu);
+			}
+
+			break;
+		
+		default:
+			break;
+	}
+
+	if (exitmenu)
+	{
+		if (currentMenu->prevMenu)
+			M_SetupNextMenu(currentMenu->prevMenu);
+		else
+			M_ClearMenus(true);
+	}
+}
+
 static void M_Connect(INT32 choice)
 {
 	// do not call menuexitfunc
 	M_ClearMenus(false);
 
-	COM_BufAddText(va("connect node %d\n", serverlist[choice-FIRSTSERVERLINE + serverlistpage * SERVERS_PER_PAGE].node));
+	COM_BufAddText(va("connect node %d\n", serverlist[choice - FIRSTSERVERLINE + serverlistpage * SERVERS_PER_PAGE].node));
 }
 
 static void M_Refresh(INT32 choice)
@@ -8783,6 +8863,9 @@ static void M_Refresh(INT32 choice)
 	CL_UpdateServerList();
 #endif/*MASTERSERVER*/
 }
+
+static UINT16 previous_menu = 0;
+static plrinfo playerinfo[MAXPLAYERS];
 
 static void M_DrawConnectMenu(void)
 {
@@ -8835,9 +8918,12 @@ static void M_DrawConnectMenu(void)
 			{
 				spd = kartspeed_cons_t[serverlist[slindex].info.kartvars & SV_SPEEDMASK].strvalue;
 
-				V_DrawSmallString(currentMenu->x + 42, S_LINEY(i)+9, globalflags, va("(%s Speed)", spd));
+				V_DrawSmallString(currentMenu->x + 84, S_LINEY(i)+9, globalflags, va("%s Speed", spd));
 			}
 
+			if (itemOn == FIRSTSERVERLINE+i)
+				previous_menu = i;
+			
 			MP_ConnectMenu[i+FIRSTSERVERLINE].status = IT_STRING | IT_CALL;
 		}
 
@@ -8860,6 +8946,78 @@ static void M_DrawConnectMenu(void)
 		M_DrawTextBox(52, BASEVIDHEIGHT/2-10, 25, 3);
 		V_DrawCenteredString(BASEVIDWIDTH/2, BASEVIDHEIGHT/2, 0, message);
 		V_DrawCenteredString(BASEVIDWIDTH/2, (BASEVIDHEIGHT/2)+12, 0, "Please wait.");
+	}
+}
+
+static void M_ConnectConfirmation(void)
+{
+	INT32 i; // Get the players on it
+	INT32 c = previous_menu;
+
+	M_DrawCenteredMenu(); // Draw the menu, wouldnt you?
+
+	//
+	// Drawing
+	//
+
+	INT32 gy = 12;
+
+	// Windy Box
+	INT32 box_width = 264;
+	V_DrawFill(160 - (box_width / 2), gy, box_width, 158, 239);
+
+	// Server name, and the players on it.
+	int maxplayer_color = (serverlist[c].info.numberofplayer >= serverlist[c].info.maxplayer) ? '\x85' : '\x82';
+	V_DrawCenteredThinString(160, gy + 4, V_ALLOWLOWERCASE|V_6WIDTHSPACE, va("%s - %c%d\x80/%d Players", serverlist[c].info.servername, maxplayer_color, serverlist[c].info.numberofplayer, serverlist[c].info.maxplayer));
+
+	// Current server level.
+	const char *map = va("%sP", serverlist[c].info.mapname);
+	patch_t *current_map = W_LumpExists(map) ? W_CachePatchName(map, PU_CACHE) : W_CachePatchName("RANDOMLV", PU_CACHE);
+
+	INT32 poffs = (current_map->width / 4);
+
+	V_DrawSmallScaledPatch(160 - poffs, gy + 18, 0, current_map);
+	V_DrawCenteredThinString(160, gy + 71, V_ALLOWLOWERCASE|V_6WIDTHSPACE, serverlist[c].info.maptitle);
+		
+	// What gametype are we in?
+	V_DrawDiag(160 - poffs, gy + 18, 12, 31);
+	V_DrawDiag(160 - poffs, gy + 18, 10, G_GetGametypeColor(serverlist[c].info.gametype));
+		
+	// If we are on a race, display the current speed.
+	if (serverlist[c].info.gametype == GT_RACE)
+		V_DrawCenteredSmallString(160, gy + 81, V_ALLOWLOWERCASE, va("%s Speed", kartspeed_cons_t[serverlist[c].info.kartvars & SV_SPEEDMASK].strvalue));
+
+	//
+	// Players
+	//
+
+	V_DrawFill(160 - (box_width / 2), gy + 96, box_width, 15, 29);
+	V_DrawCenteredString(160, gy + 99, V_ALLOWLOWERCASE|V_YELLOWMAP, "Players in the server:");
+
+	INT32 x = 58;
+	INT32 y = (gy + 113);
+
+	char player_name[MAXPLAYERNAME + 1];
+	
+	for (i = 0; i < serverlist[c].info.numberofplayer; i++)
+	{
+		if (i <= 0)
+		{
+			V_DrawThinString(42, y, V_ALLOWLOWERCASE|V_6WIDTHSPACE|V_GRAYMAP, "No Players Found!");
+			return;
+		}
+
+		strlcpy(player_name, (const char *)&playerinfo[i].name[MAXPLAYERNAME], 10);
+
+		V_DrawCenteredThinString(x, y, V_ALLOWLOWERCASE|V_6WIDTHSPACE, player_name);
+		y += 11;
+
+		// Offset the player count if its more than the given value.
+		if (i == 3 || i == 7 || i == 11)
+		{
+			x += 68;
+			y = (gy + 113);
+		}
 	}
 }
 
@@ -9148,7 +9306,7 @@ static void M_DrawLevelSelectOnly(boolean leftfade, boolean rightfade)
 	if (cv_nextmap.value && cv_showtrackaddon.value)
 	{
 		char *addonname = wadfiles[mapwads[cv_nextmap.value-1]]->filename;
-		INT32 len, sw = 0;
+		INT32 len = 0;
 		INT32 charlimit = 21 + (dupadjust/5);
 		nameonly(addonname);
 		len = strlen(addonname);
