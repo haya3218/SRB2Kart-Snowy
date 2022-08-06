@@ -6992,76 +6992,76 @@ static void K_drawKartItem(void)
 
 	if (stplyr->kartstuff[k_itemroulette])
 	{
-		/*if (stplyr->skincolor)
-			localcolor = stplyr->skincolor;*/
+		if (stplyr->skincolor)
+			localcolor = stplyr->skincolor;
 
 		switch((stplyr->kartstuff[k_itemroulette] % (14*3)) / 3)
 		{
 			// Each case is handled in threes, to give three frames of in-game time to see the item on the roulette
 			case 0: // Sneaker
 				localpatch = kp_sneaker[offset];
-				localcolor = SKINCOLOR_RASPBERRY;
+				//localcolor = SKINCOLOR_RASPBERRY;
 				break;
 			case 1: // Banana
 				localpatch = kp_banana[offset];
-				localcolor = SKINCOLOR_YELLOW;
+				//localcolor = SKINCOLOR_YELLOW;
 				break;
 			case 2: // Orbinaut
 				localpatch = kp_orbinaut[3+offset];
-				localcolor = SKINCOLOR_STEEL;
+				//localcolor = SKINCOLOR_STEEL;
 				break;
 			case 3: // Mine
 				localpatch = kp_mine[offset];
-				localcolor = SKINCOLOR_JET;
+				//localcolor = SKINCOLOR_JET;
 				break;
 			case 4: // Grow
 				localpatch = kp_grow[offset];
-				localcolor = SKINCOLOR_TEAL;
+				//localcolor = SKINCOLOR_TEAL;
 				break;
 			case 5: // Hyudoro
 				localpatch = kp_hyudoro[offset];
-				localcolor = SKINCOLOR_STEEL;
+				//localcolor = SKINCOLOR_STEEL;
 				break;
 			case 6: // Rocket Sneaker
 				localpatch = kp_rocketsneaker[offset];
-				localcolor = SKINCOLOR_TANGERINE;
+				//localcolor = SKINCOLOR_TANGERINE;
 				break;
 			case 7: // Jawz
 				localpatch = kp_jawz[offset];
-				localcolor = SKINCOLOR_JAWZ;
+				//localcolor = SKINCOLOR_JAWZ;
 				break;
 			case 8: // Self-Propelled Bomb
 				localpatch = kp_selfpropelledbomb[offset];
-				localcolor = SKINCOLOR_JET;
+				//localcolor = SKINCOLOR_JET;
 				break;
 			case 9: // Shrink
 				localpatch = kp_shrink[offset];
-				localcolor = SKINCOLOR_ORANGE;
+				//localcolor = SKINCOLOR_ORANGE;
 				break;
 			case 10: // Invincibility
 				localpatch = localinv;
-				localcolor = SKINCOLOR_GREY;
+				//localcolor = SKINCOLOR_GREY;
 				break;
 			case 11: // Eggman Monitor
 				localpatch = kp_eggman[offset];
-				localcolor = SKINCOLOR_ROSE;
+				//localcolor = SKINCOLOR_ROSE;
 				break;
 			case 12: // Ballhog
 				localpatch = kp_ballhog[offset];
-				localcolor = SKINCOLOR_LILAC;
+				//localcolor = SKINCOLOR_LILAC;
 				break;
 			case 13: // Thunder Shield
 				localpatch = kp_thundershield[offset];
-				localcolor = SKINCOLOR_CYAN;
+				//localcolor = SKINCOLOR_CYAN;
 				break;
-			case 14: // Pogo Spring
-				//localpatch = kp_pogospring[offset];
+			/*case 14: // Pogo Spring
+				localpatch = kp_pogospring[offset];
 				localcolor = SKINCOLOR_TANGERINE;
 				break;
 			case 15: // Kitchen Sink
-				//localpatch = kp_kitchensink[offset];
+				localpatch = kp_kitchensink[offset];
 				localcolor = SKINCOLOR_STEEL;
-				break;
+				break;*/
 			default:
 				break;
 		}
@@ -7440,13 +7440,15 @@ static void K_DrawKartPositionNum(INT32 num)
 	// POSI_X = BASEVIDWIDTH - 51;	// 269
 	// POSI_Y = BASEVIDHEIGHT- 64;	// 136
 
-	boolean win = (stplyr->exiting && num == 1);
-	//INT32 X = POSI_X;
 	INT32 W = SHORT(kp_positionnum[0][0]->width);
+	INT32 fx = 0, fy = 0, fflags = 0;
+
+	INT32 xoffs = (cv_showinput.value) ? -48 : 0; // showinput does not care about splitscreen, thank god.
+
 	fixed_t scale = FRACUNIT/2;
 	patch_t *localpatch = kp_positionnum[0][0];
-	//INT32 splitflags = K_calcSplitFlags(V_SNAPTOBOTTOM|V_SNAPTORIGHT);
-	INT32 fx = 0, fy = 0, fflags = 0;
+
+	boolean win = (stplyr->exiting && num == 1);
 	boolean flipdraw = false;	// flip the order we draw it in for MORE splitscreen bs. fun.
 	boolean flipvdraw = false;	// used only for 2p splitscreen so overtaking doesn't make 1P's position fly off the screen.
 	boolean overtake = false;
@@ -7462,7 +7464,7 @@ static void K_DrawKartPositionNum(INT32 num)
 	// pain and suffering defined below
 	if (!splitscreen)
 	{
-		fx = POSI_X;
+		fx = POSI_X + xoffs;
 		fy = BASEVIDHEIGHT - 8;
 		fflags = V_SNAPTOBOTTOM|V_SNAPTORIGHT;
 	}
@@ -7721,12 +7723,12 @@ void HU_DrawTabRankings(INT32 x, INT32 y, playersort_t *tab, INT32 scorelines, I
 	for (i = 0; i < scorelines; i++)
 	{
 		char strtime[MAXPLAYERNAME+1];
+		player_t *player = &players[tab[i].num];
 
-		if (players[tab[i].num].spectator || !players[tab[i].num].mo)
+		if (player->spectator)
 			continue; //ignore them.
 
-		if (netgame // don't draw it offline
-		&& tab[i].num != serverplayer)
+		if (netgame && tab[i].num != serverplayer)
 			HU_drawPing(x-22, y-4, playerpingtable[tab[i].num], 0);
 
 		STRBUFCPY(strtime, tab[i].name);
@@ -7736,24 +7738,22 @@ void HU_DrawTabRankings(INT32 x, INT32 y, playersort_t *tab, INT32 scorelines, I
 		else
 			V_DrawString(x + 20, y, ((tab[i].num == whiteplayer) ? hilicol : 0)|V_ALLOWLOWERCASE, strtime);
 
-		if (players[tab[i].num].mo->color)
+		if (player->mo->color)
 		{
-			colormap = R_GetTranslationColormap(players[tab[i].num].skin, players[tab[i].num].mo->color, GTC_CACHE);
+			colormap = R_GetTranslationColormap(player->skin, player->mo->color, GTC_CACHE);
 		
-			if (players[tab[i].num].mo->colorized)
-				colormap = R_GetTranslationColormap(TC_RAINBOW, players[tab[i].num].mo->color, GTC_CACHE);
-			else
-				colormap = R_GetTranslationColormap(players[tab[i].num].skin, players[tab[i].num].mo->color, GTC_CACHE);
+			if (player->mo->colorized)
+				colormap = R_GetTranslationColormap(TC_RAINBOW, player->mo->color, GTC_CACHE);
 
-			V_DrawMappedPatch(x, y-4, 0, facerankprefix[players[tab[i].num].skin], colormap);
+			V_DrawMappedPatch(x, y-4, 0, facerankprefix[player->skin], colormap);
 		}
 
 		if (tab[i].num == whiteplayer)
 			V_DrawScaledPatch(x, y-4, 0, kp_facehighlight[(hightime / 4) % 8]);
 
+		if (gamestate == GS_LEVEL)
 		{
-			// Since we can show this on the voting screen, only draw these while on a level.
-			if ((gamestate == GS_LEVEL) && (G_BattleGametype() && players[tab[i].num].kartstuff[k_bumper] <= 0))
+			if (G_BattleGametype() && player->kartstuff[k_bumper] <= 0)
 				V_DrawScaledPatch(x-4, y-7, 0, kp_ranknobumpers);
 
 			INT32 pos = tab[i].position;
@@ -7763,26 +7763,23 @@ void HU_DrawTabRankings(INT32 x, INT32 y, playersort_t *tab, INT32 scorelines, I
 		
 			// Draws the little number over the face
 			V_DrawScaledPatch(x-5, y+6, 0, kp_facenum[pos]);
-		}
 
-		if (gamestate == GS_LEVEL)
-		{
 			if (G_RaceGametype())
 			{
 				if (scorelines > 8)
 				{
-					if (players[tab[i].num].exiting)
-						V_DrawRightAlignedThinString(x+rightoffset, y-1, hilicol|V_6WIDTHSPACE, timestring(players[tab[i].num].realtime));
-					else if (players[tab[i].num].pflags & PF_TIMEOVER)
+					if (player->exiting)
+						V_DrawRightAlignedThinString(x+rightoffset, y-1, hilicol|V_6WIDTHSPACE, timestring(player->realtime));
+					else if (player->pflags & PF_TIMEOVER)
 						V_DrawRightAlignedThinString(x+rightoffset, y-1, V_6WIDTHSPACE, "NO CONTEST.");
 					else if (circuitmap)
 						V_DrawRightAlignedThinString(x+rightoffset, y-1, V_6WIDTHSPACE, va("Lap %d", tab[i].count));
 				}
 				else
 				{
-					if (players[tab[i].num].exiting)
-						V_DrawRightAlignedString(x+rightoffset, y, hilicol, timestring(players[tab[i].num].realtime));
-					else if (players[tab[i].num].pflags & PF_TIMEOVER)
+					if (player->exiting)
+						V_DrawRightAlignedString(x+rightoffset, y, hilicol, timestring(player->realtime));
+					else if (player->pflags & PF_TIMEOVER)
 						V_DrawRightAlignedThinString(x+rightoffset, y-1, 0, "NO CONTEST.");
 					else if (circuitmap)
 						V_DrawRightAlignedString(x+rightoffset, y, 0, va("Lap %d", tab[i].count));
@@ -7794,9 +7791,9 @@ void HU_DrawTabRankings(INT32 x, INT32 y, playersort_t *tab, INT32 scorelines, I
 		else
 		{
 			if (scorelines > 8)
-				V_DrawRightAlignedThinString(x+rightoffset, y, V_6WIDTHSPACE, va("%d", players[tab[i].num].score));
+				V_DrawRightAlignedThinString(x+rightoffset, y, V_6WIDTHSPACE, va("%d", player->score));
 			else
-				V_DrawRightAlignedString(x+rightoffset, y, 0, va("%d", players[tab[i].num].score));
+				V_DrawRightAlignedString(x+rightoffset, y, 0, va("%d", player->score));
 		}
 
 		y += 18;
@@ -8684,9 +8681,14 @@ static void K_drawInput(void)
 
 	static INT32 pn = 0;
 	INT32 target = 0, splitflags = (V_SNAPTOBOTTOM|V_SNAPTORIGHT);
-	INT32 x = BASEVIDWIDTH - 32, y = BASEVIDHEIGHT-24, offs, col;
+	
+	INT32 x = BASEVIDWIDTH - 32;
+	INT32 y = BASEVIDHEIGHT - 24;
+
 	const INT32 accent1 = splitflags|colortranslations[stplyr->skincolor][5];
 	const INT32 accent2 = splitflags|colortranslations[stplyr->skincolor][9];
+	INT32 offs, col;
+	
 	ticcmd_t *cmd = &stplyr->cmd;
 
 	if (timeinmap <= 105)

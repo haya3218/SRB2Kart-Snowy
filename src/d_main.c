@@ -573,10 +573,6 @@ static boolean D_Display(void)
 	// vid size change is now finished if it was on...
 	vid.recalc = 0;
 
-	// FIXME: draw either console or menu, not the two
-	if (gamestate != GS_TIMEATTACK)
-		CON_Drawer();
-
 #ifdef HAVE_THREADS
 	I_lock_mutex(&m_menu_mutex);
 #endif
@@ -585,6 +581,8 @@ static boolean D_Display(void)
 	I_unlock_mutex(m_menu_mutex);
 #endif
 	// focus lost moved to M_Drawer
+
+	CON_Drawer();
 
 	ps_uitime = I_GetTimeMicros() - ps_uitime;
 
