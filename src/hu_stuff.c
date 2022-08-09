@@ -78,6 +78,7 @@ patch_t *cred_font[CRED_FONTSIZE];
 // Note: I'd like to adress that at this point we might *REALLY* want to work towards a common drawString function that can take any font we want because this is really turning into a MESS. :V -Lat'
 patch_t *pingnum[10];
 patch_t *pinggfx[5];	// small ping graphic
+patch_t *ranknum[10];
 
 patch_t *framecounter;
 patch_t *frameslash;	// framerate stuff. Used in screen.c
@@ -269,10 +270,15 @@ void HU_LoadGraphics(void)
 	{
 		sprintf(buffer, "STTNUM%d", i);
 		tallnum[i] = (patch_t *)W_CachePatchName(buffer, PU_HUDGFX);
+		
 		sprintf(buffer, "NGTNUM%d", i);
 		nightsnum[i] = (patch_t *) W_CachePatchName(buffer, PU_HUDGFX);
+		
 		sprintf(buffer, "PINGN%d", i);
 		pingnum[i] = (patch_t *) W_CachePatchName(buffer, PU_HUDGFX);
+
+		sprintf(buffer, "OPPRNK0%d", i);
+		ranknum[i] = (patch_t *) W_CachePatchName(buffer, PU_HUDGFX);
 	}
 
 	// minus for negative tallnums
@@ -2340,7 +2346,7 @@ void HU_Erase(void)
 void HU_drawPing(INT32 x, INT32 y, UINT32 ping, INT32 flags)
 {
 	INT32 gfxnum = 4;	// gfx to draw
-	UINT8 const *colormap = R_GetTranslationColormap(TC_RAINBOW, SKINCOLOR_SALMON, GTC_CACHE);
+	UINT8 const *colormap = R_GetTranslationColormap(TC_RAINBOW, SKINCOLOR_CHERRY, GTC_CACHE);
 
 	if (ping < 76)
 		gfxnum = 0;

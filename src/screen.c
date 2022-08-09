@@ -422,7 +422,7 @@ void SCR_DisplayTicRate(void)
 	
 	UINT32 flags = V_SNAPTORIGHT | V_SNAPTOBOTTOM;
 
-	INT32 fps_color = 0;
+	INT32 fps_color = SKINCOLOR_WHITE;
 	const UINT8 *ticcntcolor = NULL;
 
 	if (lasttic != ontic)
@@ -439,36 +439,36 @@ void SCR_DisplayTicRate(void)
 	else
 		fpsgraph[ontic]++;
 
-	if (totaltics <= TICRATE/2) fps_color = SKINCOLOR_CHERRY;
-	else if (totaltics >= 59) fps_color = SKINCOLOR_AQUA;
-	else if (totaltics >= TICRATE) fps_color = SKINCOLOR_MINT;
+	if 		(totaltics <= TICRATE/2) fps_color = SKINCOLOR_CHERRY; // <= 17
+	else if (totaltics >= TICRATE)	 fps_color = SKINCOLOR_MINT;   // >= 35
+	else if (totaltics >= TICRATE*2) fps_color = SKINCOLOR_AQUA;   // >= 70
 
 	ticcntcolor = R_GetTranslationColormap(TC_RAINBOW, fps_color, GTC_CACHE);
 
 	if (cv_ticrate.value == 2) // Enhanced.
 	{
-		INT32 frame_offs = (cv_frameratecap.value > 99) ? 302 : 306;
+		INT32 frame_offs = (cv_frameratecap.value > 99) ? 301 : 305;
 		
 		// "FPS"
-		V_DrawFixedPatch(306 << FRACBITS, 184 << FRACBITS, FRACUNIT, flags, framecounter, R_GetTranslationColormap(TC_RAINBOW, SKINCOLOR_YELLOW, GTC_CACHE));
+		V_DrawFixedPatch(305 << FRACBITS, 183 << FRACBITS, FRACUNIT, flags, framecounter, R_GetTranslationColormap(TC_RAINBOW, SKINCOLOR_YELLOW, GTC_CACHE));
 
 		// A lot of stuff is changed here, if we count for uncapped values, or capped ones.
 		switch (cv_interpolationmode.value)
 		{
 			case 1: // Capped.
-				V_DrawPingNum(318, 191, flags, cv_frameratecap.value, ticcntcolor);
-				V_DrawFixedPatch(frame_offs << FRACBITS, 191 << FRACBITS, FRACUNIT, flags, frameslash, ticcntcolor);
-				V_DrawPingNum(frame_offs, 191, flags, totaltics, ticcntcolor);
+				V_DrawPingNum(317, 190, flags, cv_frameratecap.value, ticcntcolor);
+				V_DrawFixedPatch(frame_offs << FRACBITS, 190 << FRACBITS, FRACUNIT, flags, frameslash, ticcntcolor);
+				V_DrawPingNum(frame_offs, 190, flags, totaltics, ticcntcolor);
 				break;
 
 			case 2: // Uncapped!
-				V_DrawPingNum(318, 191, flags, totaltics, ticcntcolor);
+				V_DrawPingNum(317, 190, flags, totaltics, ticcntcolor);
 				break;
 
 			default: // We turned that off.
-				V_DrawPingNum(318, 191, flags, TICRATE, ticcntcolor);
-				V_DrawFixedPatch(306 << FRACBITS, 191 << FRACBITS, FRACUNIT, flags, frameslash, ticcntcolor);
-				V_DrawPingNum(306, 191, flags, totaltics, ticcntcolor);
+				V_DrawPingNum(317, 190, flags, TICRATE, ticcntcolor);
+				V_DrawFixedPatch(305 << FRACBITS, 190 << FRACBITS, FRACUNIT, flags, frameslash, ticcntcolor);
+				V_DrawPingNum(305, 190, flags, totaltics, ticcntcolor);
 				break;
 		}
 	}
@@ -489,8 +489,6 @@ void SCR_DisplayTicRate(void)
 				break;
 		}
 	}
-
-
 
 	lasttic = ontic;
 }
@@ -520,6 +518,6 @@ void SCR_DisplayLocalPing(void)
 				break;
 		}
 
-		HU_drawPing(308, dispy, ping, V_SNAPTORIGHT|V_SNAPTOBOTTOM);
+		HU_drawPing(307, dispy, ping, V_SNAPTORIGHT|V_SNAPTOBOTTOM);
 	}
 }
