@@ -697,6 +697,7 @@ void K_RegisterKartStuff(void)
 	CV_RegisterVar(&cv_kartdebugcolorize);
 
 	CV_RegisterVar(&cv_lessflicker);
+	CV_RegisterVar(&cv_showmininames);
 }
 
 //}
@@ -8315,13 +8316,15 @@ static void K_drawKartMinimapHead(mobj_t *mo, INT32 x, INT32 y, INT32 flags, pat
 			colormap = R_GetTranslationColormap(skin, mo->color, GTC_CACHE);
 		
 		V_DrawFixedPatch(amxpos + (2 * FRACUNIT), amypos + (2 * FRACUNIT), FRACUNIT / 2, flags, facemmapprefix[skin], colormap);
-		V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE) / 2) << FRACBITS), amypos - (4 * FRACUNIT), V_ALLOWLOWERCASE, player_name);
+		
+		if (cv_showmininames.value)
+			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE, player_name);
 		
 		if (mo->player
 			&& ((G_RaceGametype() && mo->player->kartstuff[k_position] == spbplace)
 			|| (G_BattleGametype() && K_IsPlayerWanted(mo->player))))
 		{
-			V_DrawFixedPatch(amxpos - (4<<FRACBITS), amypos - (4<<FRACBITS), FRACUNIT, flags, kp_wantedreticle, NULL);
+			V_DrawFixedPatch(amxpos, amypos, FRACUNIT / 2, flags, kp_wantedreticle, NULL);
 		}
 	}
 }
