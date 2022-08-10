@@ -1490,8 +1490,7 @@ static menuitem_t OP_HUDOptionsMenu[] =
 	{IT_HEADER, NULL, "Miscelleanous", NULL, 120},
 	
 	{IT_STRING | IT_CVAR, NULL, "Show Track Addon Name",  &cv_showtrackaddon, 125},
-	{IT_STRING | IT_CVAR, NULL, "Player names on Minimaps", &cv_showmininames,  130},
-	{IT_STRING | IT_CVAR, NULL,	"Character Select Style", &cv_skinselectmenu, 135},
+	{IT_STRING | IT_CVAR, NULL,	"Character Select Style", &cv_skinselectmenu, 130},
 };
 
 
@@ -9618,7 +9617,7 @@ static boolean setupm_skinlockedselect;
 #define SKINGRIDWIDTH 8
 #define SKINGRIDHEIGHT 6
 
-static const char *sortNames[] = {
+static char *sortNames[] = {
 	"Name",
 	"Internal name",
 	"Speed",

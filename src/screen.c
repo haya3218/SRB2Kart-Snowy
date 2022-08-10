@@ -440,8 +440,8 @@ void SCR_DisplayTicRate(void)
 		fpsgraph[ontic]++;
 
 	if 		(totaltics <= TICRATE/2) fps_color = SKINCOLOR_CHERRY; // <= 17
-	else if (totaltics >= TICRATE*2) fps_color = SKINCOLOR_AQUA;   // >= 70
 	else if (totaltics >= TICRATE)	 fps_color = SKINCOLOR_MINT;   // >= 35
+	else if (totaltics >= TICRATE*2) fps_color = SKINCOLOR_AQUA;   // >= 70
 
 	ticcntcolor = R_GetTranslationColormap(TC_RAINBOW, fps_color, GTC_CACHE);
 
