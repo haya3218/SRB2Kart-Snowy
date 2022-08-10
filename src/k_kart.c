@@ -7214,6 +7214,12 @@ static void K_drawKartItem(void)
 				itembar = stplyr->kartstuff[k_growcancel];
 				maxl = 26;
 			}
+			if (stplyr->kartstuff[k_growshrinktimer] > 0) {
+				itembar = stplyr->kartstuff[k_growshrinktimer];
+				maxl = 26*12;
+				// no draw to make sure everything actually renders properly lmao
+				localpatch = kp_nodraw;
+			}
 
 			if (leveltime & 1)
 				localpatch = kp_grow[offset];
@@ -7232,9 +7238,16 @@ static void K_drawKartItem(void)
 			if (stplyr->kartstuff[k_itemamount] <= 0)
 				return;
 
+			if (stplyr->kartstuff[k_growshrinktimer] > 0) {
+				itembar = stplyr->kartstuff[k_growshrinktimer];
+				maxl = 26*12;
+				// no draw to make sure everything actually renders properly lmao
+				localpatch = kp_nodraw;
+			}
+
 			if (stplyr->kartstuff[k_invincibilitytimer] > 0) {
 				itembar = stplyr->kartstuff[k_invincibilitytimer];
-				maxl = (itemtime*(2)) - barlength;
+				maxl = 26*10;
 				// no draw to make sure everything actually renders properly lmao
 				localpatch = kp_nodraw;
 			}
