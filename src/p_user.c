@@ -18,6 +18,7 @@
 #include "i_system.h"
 #include "d_event.h"
 #include "d_net.h"
+#include "d_netcmd.h"
 #include "g_game.h"
 #include "p_local.h"
 #include "r_main.h"
@@ -1277,13 +1278,13 @@ void P_RestoreMusic(player_t *player)
 		}
 
 		// Item - Grow
-		if (wantedmus == 2)
+		if (wantedmus == 2 && cv_kartinvinmus.value)
 		{
 			S_ChangeMusicInternal("kgrow", true);
 			S_SetRestoreMusicFadeInCvar(&cv_growmusicfade);
 		}
 		// Item - Invincibility
-		else if (wantedmus == 1)
+		else if (wantedmus == 1 && cv_kartinvinmus.value)
 		{
 			S_ChangeMusicInternal("kinvnc", true);
 			S_SetRestoreMusicFadeInCvar(&cv_invincmusicfade);

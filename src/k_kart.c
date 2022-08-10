@@ -698,6 +698,7 @@ void K_RegisterKartStuff(void)
 
 	CV_RegisterVar(&cv_lessflicker);
 	CV_RegisterVar(&cv_showmininames);
+	CV_RegisterVar(&cv_kartinvinmus);
 }
 
 //}

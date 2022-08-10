@@ -1347,13 +1347,14 @@ static menuitem_t OP_SoundOptionsMenu[] =
 	{IT_STRING | IT_CVAR, NULL, "Chat Notifications", &cv_chatnotifications, 40},
 	{IT_STRING | IT_CVAR, NULL, "Character voices",	  &cv_kartvoices,		 45},
 	{IT_STRING | IT_CVAR, NULL, "Powerup Warning",	  &cv_kartinvinsfx,		 50},
+	{IT_STRING | IT_CVAR, NULL, "Powerup Music",	  &cv_kartinvinmus,		 55},
 
-	{IT_HEADER, NULL, "Miscelleanous", NULL, 60},
+	{IT_HEADER, NULL, "Miscelleanous", NULL, 65},
 
-	{IT_STRING | IT_CVAR, NULL, "Reverse L/R Channels", &stereoreverse,	 65},
-	{IT_STRING | IT_CVAR, NULL, "Surround Sound",		&surround,		 70},
+	{IT_STRING | IT_CVAR, NULL, "Reverse L/R Channels", &stereoreverse,	 70},
+	{IT_STRING | IT_CVAR, NULL, "Surround Sound",		&surround,		 75},
 
-	{IT_STRING | IT_SUBMENU, NULL, "Advanced Options...", &OP_AdvancedSoundsDef, 80}
+	{IT_STRING | IT_SUBMENU, NULL, "Advanced Options...", &OP_AdvancedSoundsDef, 85}
 };
 
 static menuitem_t OP_AdvancedSoundsMenu[] =
@@ -1491,7 +1492,7 @@ static menuitem_t OP_HUDOptionsMenu[] =
 	
 	{IT_STRING | IT_CVAR, NULL, "Show Track Addon Name",  &cv_showtrackaddon, 125},
 	{IT_STRING | IT_CVAR, NULL, "Player names on Minimaps", &cv_showmininames,  130},
-	{IT_STRING | IT_CVAR, NULL,	"Character Select Style", &cv_skinselectmenu, 130},
+	{IT_STRING | IT_CVAR, NULL,	"Character Select Style", &cv_skinselectmenu, 135},
 };
 
 

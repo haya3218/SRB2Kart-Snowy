@@ -135,6 +135,7 @@ extern consvar_t cv_kartdebugitem, cv_kartdebugamount, cv_kartdebugshrink, cv_ka
 extern consvar_t cv_kartdebugcheckpoint, cv_kartdebugnodes, cv_kartdebugcolorize;
 
 extern consvar_t cv_showmininames;
+extern consvar_t cv_kartinvinmus;
 
 extern consvar_t cv_itemfinder;
 
