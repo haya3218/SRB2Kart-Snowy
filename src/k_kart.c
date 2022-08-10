@@ -7220,12 +7220,6 @@ static void K_drawKartItem(void)
 			else
 				localpatch = kp_nodraw;
 		}
-		else if (stplyr->kartstuff[k_invincibilitytimer] > 0)
-		{
-			// invincibility timer bar
-			itembar = stplyr->kartstuff[k_invincibilitytimer];
-			maxl = (itemtime*(2)) - barlength;
-		}
 		else if (stplyr->kartstuff[k_sadtimer] > 0)
 		{
 			if (leveltime & 2)
@@ -7237,6 +7231,11 @@ static void K_drawKartItem(void)
 		{
 			if (stplyr->kartstuff[k_itemamount] <= 0)
 				return;
+
+			if (stplyr->kartstuff[k_invincibilitytimer] > 0) {
+				itembar = stplyr->kartstuff[k_invincibilitytimer];
+				maxl = (itemtime*(2)) - barlength;
+			}
 
 			switch(stplyr->kartstuff[k_itemtype])
 			{
