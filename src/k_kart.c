@@ -7220,6 +7220,12 @@ static void K_drawKartItem(void)
 			else
 				localpatch = kp_nodraw;
 		}
+		else if (stplyr->kartstuff[k_invincibilitytimer] > 0)
+		{
+			// invincibility timer bar
+			itembar = stplyr->kartstuff[k_invincibilitytimer];
+			maxl = (itemtime*(2)) - barlength;
+		}
 		else if (stplyr->kartstuff[k_sadtimer] > 0)
 		{
 			if (leveltime & 2)
@@ -8318,8 +8324,8 @@ static void K_drawKartMinimapHead(mobj_t *mo, INT32 x, INT32 y, INT32 flags, pat
 		
 		V_DrawFixedPatch(amxpos + (2 * FRACUNIT), amypos + (2 * FRACUNIT), FRACUNIT / 2, flags, facemmapprefix[skin], colormap);
 		
-		if (cv_showmininames.value)
-			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE, player_name);
+		if (cv_showmininames.value) // haya: needs V_SNAPTORIGHT to render as intended on higher resolutions
+			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE|V_SNAPTORIGHT|V_TRANSLUCENT, player_name);
 		
 		if (mo->player
 			&& ((G_RaceGametype() && mo->player->kartstuff[k_position] == spbplace)
