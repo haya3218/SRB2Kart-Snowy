@@ -8308,8 +8308,7 @@ static void K_drawKartMinimapHead(mobj_t *mo, INT32 x, INT32 y, INT32 flags, pat
 	else
 	{
 		UINT8 *colormap;
-		const char *player_name = va("%s%s", V_ApproximateSkinColorCode(mo->color), player_names[mo->player - players]); 
-		
+			
 		if (mo->colorized)
 			colormap = R_GetTranslationColormap(TC_RAINBOW, mo->color, GTC_CACHE);
 		else
@@ -8318,7 +8317,13 @@ static void K_drawKartMinimapHead(mobj_t *mo, INT32 x, INT32 y, INT32 flags, pat
 		V_DrawFixedPatch(amxpos + (2 * FRACUNIT), amypos + (2 * FRACUNIT), FRACUNIT / 2, flags, facemmapprefix[skin], colormap);
 		
 		if (cv_showmininames.value)
+		{
+			if (modeattacking || gamestate == GS_TIMEATTACK) // Don't show names on RA, due to ghosts.
+				return;
+
+			const char *player_name = va("%s%s", V_ApproximateSkinColorCode(mo->color), player_names[mo->player - players]);
 			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE|flags) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE|flags, player_name);
+		}
 		
 		if (mo->player
 			&& ((G_RaceGametype() && mo->player->kartstuff[k_position] == spbplace)
