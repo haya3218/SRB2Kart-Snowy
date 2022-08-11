@@ -7862,7 +7862,7 @@ void HU_DrawTabRankings(INT32 x, INT32 y, playersort_t *tab, INT32 scorelines, I
 			if (G_BattleGametype() && player->kartstuff[k_bumper] <= 0)
 				V_DrawScaledPatch(x-4, y-7, 0, kp_ranknobumpers);
 
-			INT32 pos = tab[i].position;
+			INT32 pos = player->kartstuff[k_position];
 		
 			if (pos < 0 || pos > MAXPLAYERS)
 				pos = 0;
@@ -8318,7 +8318,7 @@ static void K_drawKartMinimapHead(mobj_t *mo, INT32 x, INT32 y, INT32 flags, pat
 		V_DrawFixedPatch(amxpos + (2 * FRACUNIT), amypos + (2 * FRACUNIT), FRACUNIT / 2, flags, facemmapprefix[skin], colormap);
 		
 		if (cv_showmininames.value)
-			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE, player_name);
+			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE|flags) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE|flags, player_name);
 		
 		if (mo->player
 			&& ((G_RaceGametype() && mo->player->kartstuff[k_position] == spbplace)

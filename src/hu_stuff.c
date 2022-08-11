@@ -2791,7 +2791,7 @@ static void HU_DrawRankings(void)
 {
 	patch_t *p;
 	playersort_t tab[MAXPLAYERS];
-	INT32 i, j, scorelines, hilicol; //, numplayersingame = 0;
+	INT32 i, j, scorelines, hilicol, numplayersingame = 0;
 	boolean completed[MAXPLAYERS];
 	UINT32 whiteplayer = MAXPLAYERS;
 
@@ -2868,13 +2868,13 @@ static void HU_DrawRankings(void)
 				V_DrawCenteredString(160, 16, hilicol, va("%d", cv_numlaps.value));
 			}
 
-			V_DrawString(4, 178, hilicol|V_ALLOWLOWERCASE, va("%s Speed", cv_kartspeed.string));
+			V_DrawString(4, 178, hilicol|V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, va("%s Speed", cv_kartspeed.string));
 		}
 	}
 	else
 	{
 		if (G_RaceGametype())
-			V_DrawString(4, 178, hilicol|V_ALLOWLOWERCASE, va("%s Speed", cv_kartspeed.string));
+			V_DrawString(4, 178, hilicol|V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ALLOWLOWERCASE, va("%s Speed", cv_kartspeed.string));
 			
 		V_DrawCenteredString(160, 8, V_ALLOWLOWERCASE, "\x82* \x80Total Rankings \x82*");
 	}
@@ -2885,58 +2885,57 @@ static void HU_DrawRankings(void)
 		whiteplayer = demo.playback ? displayplayers[0] : consoleplayer;
 
 	scorelines = 0;
-	memset(completed, 0, sizeof(completed));
-	memset(tab, 0, sizeof(playersort_t) * MAXPLAYERS);
+	memset(completed, 0, sizeof (completed));
+	memset(tab, 0, sizeof (playersort_t)*MAXPLAYERS);
 
 	for (i = 0; i < MAXPLAYERS; i++)
 	{
 		tab[i].num = -1;
-		tab[i].name = 0;
+		tab[i].name = NULL;
 		tab[i].count = INT32_MAX;
-		tab[i].position = 0;
-	}
 
-	for (j = 0; j < MAXPLAYERS; j++)
-	{
-		if (!playeringame[j] || players[j].spectator)
+		if (!playeringame[i] || players[i].spectator || !players[i].mo)
 			continue;
 
-		//UINT8 lowestposition = MAXPLAYERS+1;
+		numplayersingame++;
+	}
 
+	for (j = 0; j < numplayersingame; j++)
+	{
+		UINT8 lowestposition = MAXPLAYERS + 1;
+		
 		for (i = 0; i < MAXPLAYERS; i++)
 		{
-			if (!playeringame[i] || players[i].spectator)
+			if (!playeringame[i] || players[i].spectator || !players[i].mo || completed[i])
 				continue;
 
-			if (completed[i] == true)
+			if (players[i].kartstuff[k_position] >= lowestposition)
 				continue;
 
-			// Base points and positioning.
-			if (gamestate == GS_LEVEL)
-			{
-				if (G_RaceGametype())
-				{
-					if (circuitmap)
-						tab[scorelines].count = players[i].laps+1;
-					else
-						tab[scorelines].count = players[i].realtime;
-				}
-				else
-					tab[scorelines].count = players[i].marescore;
-
-				tab[scorelines].position = players[i].kartstuff[k_position];
-			}
-			else
-			{
-				tab[scorelines].position = (UINT8)tab[scorelines].count;
-				tab[scorelines].count = players[i].score;
-			}
-
-			tab[scorelines].name = player_names[i];
 			tab[scorelines].num = i;
+			lowestposition = players[i].kartstuff[k_position];
 		}
 
-		completed[tab[scorelines].num] = true;
+		i = tab[scorelines].num;
+		completed[i] = true;
+
+		tab[scorelines].name = player_names[i];
+
+		if (gamestate == GS_LEVEL)
+		{
+			if (G_RaceGametype())
+			{
+				if (circuitmap)
+					tab[scorelines].count = players[i].laps+1;
+				else
+					tab[scorelines].count = players[i].realtime;
+			}
+			else
+				tab[scorelines].count = players[i].marescore;
+		}
+		else
+			tab[scorelines].count = (UINT8)players[i].score;
+
 		scorelines++;
 
 #if MAXPLAYERS > 16

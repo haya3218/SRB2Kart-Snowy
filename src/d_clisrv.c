@@ -2197,18 +2197,18 @@ static boolean CL_FinishedFileList(void)
 			if (serverisfull)
 				M_StartMessage(va(M_GetText(
 					"This server is full!\n"
-					"Download of %s additional content is required to join.\n"
+					"Download of %u files (%s)\nof additional content are\nrequired to join.\n"
 					"\n"
 					"You may download, load server addons, and wait for a slot.\n"
 					"\n"
-					"Press ACCEL to continue or BRAKE to cancel.\n\n"
-				), downloadsize), M_ConfirmConnect, MM_EVENTHANDLER);
+					"Press ACCEL to continue\nor BRAKE to cancel.\n"
+				), totalfilesrequestednum, downloadsize), M_ConfirmConnect, MM_EVENTHANDLER);
 			else
 				M_StartMessage(va(M_GetText(
-					"Download of %s additional content is required to join.\n"
+					"Download of %u files (%s)\nof additional content are\nrequired to join.\n"
 					"\n"
-					"Press ACCEL to continue or BRAKE to cancel.\n\n"
-				), downloadsize), M_ConfirmConnect, MM_EVENTHANDLER);
+					"Press ACCEL to continue\nor BRAKE to cancel.\n"
+				), totalfilesrequestednum, downloadsize), M_ConfirmConnect, MM_EVENTHANDLER);
 
 			Z_Free(downloadsize);
 			cl_mode = CL_CONFIRMCONNECT;
