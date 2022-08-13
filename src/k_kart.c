@@ -7090,6 +7090,7 @@ static void K_drawKartItem(void)
 	//INT32 splitflags = K_calcSplitFlags(V_SNAPTOTOP|V_SNAPTOLEFT);
 	const INT32 numberdisplaymin = ((!offset && stplyr->kartstuff[k_itemtype] == KITEM_ORBINAUT) ? 5 : 2);
 	INT32 itembar = 0;
+	INT32 itembar2 = 0;
 	INT32 maxl = 0; // itembar's normal highest value
 	const INT32 barlength = (splitscreen > 1 ? 12 : 26);
 	UINT8 localcolor = SKINCOLOR_NONE;
@@ -7235,9 +7236,6 @@ static void K_drawKartItem(void)
 		}
 		else
 		{
-			if (stplyr->kartstuff[k_itemamount] <= 0)
-				return;
-
 			if (stplyr->kartstuff[k_growshrinktimer] > 0) {
 				itembar = stplyr->kartstuff[k_growshrinktimer];
 				maxl = 26*12;
@@ -7251,6 +7249,9 @@ static void K_drawKartItem(void)
 				// no draw to make sure everything actually renders properly lmao
 				localpatch = kp_nodraw;
 			}
+
+			if (stplyr->kartstuff[k_itemamount] <= 0 && (stplyr->kartstuff[k_growshrinktimer] <= 0 || stplyr->kartstuff[k_invincibilitytimer] <= 0) )
+				return;
 
 			switch(stplyr->kartstuff[k_itemtype])
 			{
@@ -7386,6 +7387,28 @@ static void K_drawKartItem(void)
 
 	// Extensible meter, currently only used for rocket sneaker...
 	if (itembar && hudtrans)
+	{
+		const INT32 fill = ((itembar*barlength)/maxl);
+		const INT32 length = min(barlength, fill);
+		const INT32 height = (offset ? 1 : 2);
+		const INT32 x = (offset ? 17 : 11), y = (offset ? 27 : 35);
+
+		V_DrawScaledPatch(fx+x, fy+y, V_HUDTRANS|fflags, kp_itemtimer[offset]);
+		// The left dark "AA" edge
+		V_DrawFill(fx+x+1, fy+y+1, (length == 2 ? 2 : 1), height, 12|fflags);
+		// The bar itself
+		if (length > 2)
+		{
+			V_DrawFill(fx+x+length, fy+y+1, 1, height, 12|fflags); // the right one
+			if (height == 2)
+				V_DrawFill(fx+x+2, fy+y+2, length-2, 1, 8|fflags); // the dulled underside
+			V_DrawFill(fx+x+2, fy+y+1, length-2, 1, 120|fflags); // the shine
+		}
+	}
+
+	// * Secondary meter for when both grow and invincibility at the same time
+	// TODO: Make this better. very shitty.
+	if (itembar2 && hudtrans)
 	{
 		const INT32 fill = ((itembar*barlength)/maxl);
 		const INT32 length = min(barlength, fill);
