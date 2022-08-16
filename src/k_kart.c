@@ -7214,15 +7214,12 @@ static void K_drawKartItem(void)
 			{
 				itembar = stplyr->kartstuff[k_growcancel];
 				maxl = 26;
-			}
-			if (stplyr->kartstuff[k_growshrinktimer] > 0) {
+			} else {
 				itembar = stplyr->kartstuff[k_growshrinktimer];
 				maxl = 26*12;
-				// no draw to make sure everything actually renders properly lmao
-				localpatch = kp_nodraw;
 			}
 
-			if (leveltime & 1)
+			if ((leveltime & 1))
 				localpatch = kp_grow[offset];
 			else
 				localpatch = kp_nodraw;
@@ -7236,21 +7233,11 @@ static void K_drawKartItem(void)
 		}
 		else
 		{
-			if (stplyr->kartstuff[k_growshrinktimer] > 0) {
-				itembar = stplyr->kartstuff[k_growshrinktimer];
-				maxl = 26*12;
-				// no draw to make sure everything actually renders properly lmao
+			// NOTE: grow doesnt have a meter in hugequest.
+			// This can only be fixed lua side since hugequest uses a different mechanic for grow.
+			if (stplyr->kartstuff[k_invincibilitytimer] > 0 && stplyr->kartstuff[k_itemamount] <= 0)
 				localpatch = kp_nodraw;
-			}
-
-			if (stplyr->kartstuff[k_invincibilitytimer] > 0) {
-				itembar = stplyr->kartstuff[k_invincibilitytimer];
-				maxl = 26*10;
-				// no draw to make sure everything actually renders properly lmao
-				localpatch = kp_nodraw;
-			}
-
-			if (stplyr->kartstuff[k_itemamount] <= 0 && (stplyr->kartstuff[k_growshrinktimer] <= 0 || stplyr->kartstuff[k_invincibilitytimer] <= 0) )
+			else if (stplyr->kartstuff[k_itemamount] <= 0)
 				return;
 
 			switch(stplyr->kartstuff[k_itemtype])
@@ -7310,7 +7297,8 @@ static void K_drawKartItem(void)
 					localpatch = kp_sadface[offset];
 					break;
 				default:
-					return;
+					localpatch = kp_nodraw;
+					break;
 			}
 
 			if (stplyr->kartstuff[k_itemheld] && !(leveltime & 1))
@@ -7364,6 +7352,7 @@ static void K_drawKartItem(void)
 		colmap = R_GetTranslationColormap(colormode, localcolor, GTC_CACHE);
 
 	UINT8 *bgcolor = R_GetTranslationColormap(TC_RAINBOW, ((stplyr->skincolor) ? stplyr->skincolor : SKINCOLOR_JAWZ), GTC_CACHE);
+	UINT8 *rainbowcolor = R_GetTranslationColormap(TC_RAINBOW, stplyr->mo->color, GTC_CACHE);
 	V_DrawFixedPatch(fx << FRACBITS, fy << FRACBITS, FRACUNIT, V_HUDTRANS|fflags, localbg, bgcolor);
 
 	// Then, the numbers:
@@ -7406,32 +7395,13 @@ static void K_drawKartItem(void)
 		}
 	}
 
-	// * Secondary meter for when both grow and invincibility at the same time
-	// TODO: Make this better. very shitty.
-	if (itembar2 && hudtrans)
-	{
-		const INT32 fill = ((itembar*barlength)/maxl);
-		const INT32 length = min(barlength, fill);
-		const INT32 height = (offset ? 1 : 2);
-		const INT32 x = (offset ? 17 : 11), y = (offset ? 27 : 35);
-
-		V_DrawScaledPatch(fx+x, fy+y, V_HUDTRANS|fflags, kp_itemtimer[offset]);
-		// The left dark "AA" edge
-		V_DrawFill(fx+x+1, fy+y+1, (length == 2 ? 2 : 1), height, 12|fflags);
-		// The bar itself
-		if (length > 2)
-		{
-			V_DrawFill(fx+x+length, fy+y+1, 1, height, 12|fflags); // the right one
-			if (height == 2)
-				V_DrawFill(fx+x+2, fy+y+2, length-2, 1, 8|fflags); // the dulled underside
-			V_DrawFill(fx+x+2, fy+y+1, length-2, 1, 120|fflags); // the shine
-		}
-	}
-
 	// Quick Eggman numbers
 	if (stplyr->kartstuff[k_eggmanexplode] > 1 /*&& stplyr->kartstuff[k_eggmanexplode] <= 3*TICRATE*/)
 		V_DrawScaledPatch(fx+17, fy+13-offset, V_HUDTRANS|fflags, kp_eggnum[min(3, G_TicsToSeconds(stplyr->kartstuff[k_eggmanexplode]))]);
 
+	// numbers for invincibility
+	if (stplyr->kartstuff[k_invincibilitytimer] > 1 && stplyr->kartstuff[k_invincibilitytimer] < 3*TICRATE)
+		V_DrawScaledPatchColMap(fx+17, fy+13-offset, V_HUDTRANS|fflags, kp_eggnum[min(3, G_TicsToSeconds(stplyr->kartstuff[k_invincibilitytimer]))+1], rainbowcolor);
 }
 
 void K_drawKartTimestamp(tic_t drawtime, INT32 TX, INT32 TY, INT16 emblemmap, UINT8 mode)
@@ -7906,7 +7876,7 @@ void HU_DrawTabRankings(INT32 x, INT32 y, playersort_t *tab, INT32 scorelines, I
 			if (G_BattleGametype() && player->kartstuff[k_bumper] <= 0)
 				V_DrawScaledPatch(x-4, y-7, 0, kp_ranknobumpers);
 
-			INT32 pos = tab[i].position;
+			INT32 pos = player->kartstuff[k_position];
 		
 			if (pos < 0 || pos > MAXPLAYERS)
 				pos = 0;
@@ -8361,8 +8331,14 @@ static void K_drawKartMinimapHead(mobj_t *mo, INT32 x, INT32 y, INT32 flags, pat
 		
 		V_DrawFixedPatch(amxpos + (2 * FRACUNIT), amypos + (2 * FRACUNIT), FRACUNIT / 2, flags, facemmapprefix[skin], colormap);
 		
-		if (cv_showmininames.value) // haya: needs V_SNAPTORIGHT to render as intended on higher resolutions
-			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE|V_TRANSLUCENT|flags, player_name);
+		if (cv_showmininames.value)
+		{
+			if (modeattacking || gamestate == GS_TIMEATTACK) // Don't show names on RA, due to ghosts.
+				return;
+
+			const char *player_name = va("%s%s", V_ApproximateSkinColorCode(mo->color), player_names[mo->player - players]);
+			V_DrawSmallStringAtFixed((amxpos + (4 * FRACUNIT)) - ((V_SmallStringWidth(player_name, V_ALLOWLOWERCASE|flags) / 2) << FRACBITS), amypos - (3 * FRACUNIT), V_ALLOWLOWERCASE|flags, player_name);
+		}
 		
 		if (mo->player
 			&& ((G_RaceGametype() && mo->player->kartstuff[k_position] == spbplace)
@@ -9343,5 +9319,3 @@ void K_drawKartHUD(void)
 		}
 	}
 }
-
-//}
