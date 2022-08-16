@@ -7401,7 +7401,7 @@ static void K_drawKartItem(void)
 
 	// numbers for invincibility
 	if (stplyr->kartstuff[k_invincibilitytimer] > 1 && stplyr->kartstuff[k_invincibilitytimer] < 3*TICRATE)
-		V_DrawScaledPatchColMap(fx+17, fy+13-offset, V_HUDTRANS|fflags, kp_eggnum[min(3, G_TicsToSeconds(stplyr->kartstuff[k_invincibilitytimer]))+1], rainbowcolor);
+		V_DrawScaledPatch(fx+17, fy+13-offset, V_HUDTRANS|fflags, kp_eggnum[min(3, G_TicsToSeconds(stplyr->kartstuff[k_invincibilitytimer]))+1]);
 }
 
 void K_drawKartTimestamp(tic_t drawtime, INT32 TX, INT32 TY, INT16 emblemmap, UINT8 mode)
