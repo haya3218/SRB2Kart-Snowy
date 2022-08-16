@@ -149,8 +149,8 @@ extern char  logfilename[1024];
 #else
 #define VERSION    1 // Game version
 #define SUBVERSION 3 // more precise version number
-#define VERSIONSTRING "v1.3 (Snowy Build)"
-#define VERSIONSTRINGW L"v1.3 (Snowy Build)"
+#define VERSIONSTRING "v1.3 (Haya's Snowy Build Fork)"
+#define VERSIONSTRINGW L"v1.3 (Haya's Snowy Build Fork)"
 // Hey! If you change this, add 1 to the MODVERSION below! Otherwise we can't force updates!
 // And change CMakeLists.txt, for CMake users!
 // AND appveyor.yml, for the build bots!
