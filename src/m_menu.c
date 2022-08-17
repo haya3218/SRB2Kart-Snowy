@@ -1096,7 +1096,7 @@ static menuitem_t OP_MainMenu[] =
 	{IT_CALL|IT_STRING,			NULL, "Tricks & Secrets (F1)",	M_Manual,					120},
 	{IT_CALL|IT_STRING,			NULL, "Play Credits",			M_Credits,					130},
 
-	{IT_SUBMENU|IT_STRING,		NULL, "Bird",	&OP_BirdDef,	150},
+	{IT_SUBMENU|IT_STRING,		NULL, "Birdmod Options...",		&OP_BirdDef,	150},
 };
 
 static menuitem_t OP_ControlsMenu[] =
